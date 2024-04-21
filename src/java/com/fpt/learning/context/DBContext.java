@@ -1,16 +1,17 @@
-package context;
+package com.fpt.learning.context;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
+import java.util.List;
 
-public class DBContext {
+public abstract class DBContext<T> {
 
     protected Connection connection;
 
-    public DBContext() {     
+    public DBContext() {
 
         try {
             String user = "sa";
@@ -22,14 +23,19 @@ public class DBContext {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public abstract List<T> findAll();
+
+    public abstract T findById(int id);
+
+    public abstract T insert(T model);
+
+    public abstract void update(T model);
+
+    public abstract void delete(int id);
+
     
-    public static void main(String[] args) {
-        DBContext db = new DBContext();
-        if(db.connection != null) {
-            System.out.println("Successs");
-        }else {
-            System.out.println("Fail");
-        }
-    }
+
+
 
 }

@@ -7,25 +7,51 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    $('#multiple-select-field-add').select2({
+    $('#multiple-select-field-add-attendees').select2({
         theme: 'bootstrap-5'
     });
 </script>
 <script>
-    $('#multiple-select-field-update').select2({
-        theme: 'bootstrap-5'
-    });
-</script>
-
-<script>
-    $('#single-select-field-add').select2({
+    $('#single-select-field-add-organizer').select2({
         theme: 'bootstrap-5'
     });
 </script>
 
 <script>
-    $('#single-select-field-update').select2({
+    $('#single-select-field-edit-organizer').select2({
         theme: 'bootstrap-5'
+    });
+</script>
+
+<script>
+    $('#multiple-select-field-edit-attendees').select2({
+        theme: 'bootstrap-5'
+    });
+</script>
+
+<script>
+    $('#single-select-field-add-category').select2({
+        theme: 'bootstrap-5'
+    });
+</script>
+
+<script>
+    $('#single-select-field-edit-category').select2({
+        theme: 'bootstrap-5'
+    });
+</script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        var toasts = document.querySelectorAll('.toast');
+        var offset = 0;
+        toasts.forEach(function (toast) {
+            var bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            // Di chuyển toast
+            toast.style.transform = 'translateY(' + offset + 'px)';
+            offset += toast.offsetHeight + 10;
+        });
     });
 </script>
 

@@ -27,11 +27,21 @@
                         <li class="list-group-item d-flex justify-content-start">
                             <i class="bi bi-geo-alt m-1"></i>
                             <input type="text" class="form-control" placeholder="Location" style="border: none">   
-
+                        </li>
+                        <li class="list-group-item d-flex justify-content-start">
+                            <i class="bi bi-text-center m-1"></i>                       
+                            <select class="form-select" id="single-select-field-add-category" data-placeholder="Category"  style="width: 100%">
+                                <option></option>
+                                <option>Reactive</option>
+                                <option>Solution</option>
+                                <option>Conglomeration</option>
+                                <option>Algoritm</option>
+                                <option>Holistic</option>
+                            </select>
                         </li>
                         <li class="list-group-item d-flex justify-content-start">
                             <i class="bi bi-person m-1"></i>                        
-                            <select class="form-select" id="single-select-field-add" data-placeholder="Organizer"  style="width: 100%">
+                            <select class="form-select" id="single-select-field-add-organizer" data-placeholder="Organizer"  style="width: 100%">
                                 <option></option>
                                 <option>Reactive</option>
                                 <option>Solution</option>
@@ -42,7 +52,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-start">
                             <i class="bi bi-people m-1"></i>                         
-                            <select class="form-select" id="multiple-select-field-add" data-placeholder="Invite attendees" multiple style="width: 100%">
+                            <select class="form-select" id="multiple-select-field-add-attendees" data-placeholder="Invite attendees" multiple style="width: 100%">
                                 <option>Christmas Island</option>
                                 <option>South Sudan</option>
                                 <option>Jamaica</option>

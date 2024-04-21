@@ -40,7 +40,7 @@
 
         </ul>
 
-        <a href="login.jsp" class="btn btn-primary my-4 m-2">
+        <a href="login" class="btn btn-primary my-4 m-2">
             <i class="bi bi-person-plus"></i>
             <span>New Account</span>
         </a>

@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,27 +14,49 @@
         <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
             <div>
                 <h1 class="text-center mb-4">Register</h1>
-                <div class="my-3 text-center">Already have an account? <a href="login.jsp">Login here</a></div>
-                <form>              
+                <div class="my-3 text-center">Already have an account? <a href="login">Login here</a></div>
+                <form action="register" method="post">           
+                    <input type="hidden" class="form-control" name="id">
                     <div class="mb-3">
                         <label class="form-label">Username</label>
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="username" value="${username}">
+
+
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" class="form-control">
+                        <input type="password" class="form-control" name="password" value="${password}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirm password</label>
-                        <input type="password" class="form-control">
+                        <input type="password" class="form-control" name="rePassword" value="${rePassword}">
                     </div>
                     <div class="mb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Register</button>
+                        <input type="submit" class="btn btn-primary" id="liveToastBtn" value="Register" name="register">
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+
+
+    <c:forEach items="${errs}" var="err">
+        <div class="toast-container top-0 end-0 p-3">
+            
+            <div id="liveToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${err}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+
+    <jsp:include page="layout/script.jsp"></jsp:include>
+
 </body>
 </html>
 
