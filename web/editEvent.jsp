@@ -1,4 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="com.fpt.learning.model.User" %>
+<%
+    session = request.getSession(false);
+    if (session == null || session.getAttribute("user") == null) {
+        response.sendRedirect("login");
+    }
+%>
 <div class="modal fade" id="modalEditEvent" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -30,49 +37,33 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-start">
                             <i class="bi bi-text-center m-1"></i>                       
-                            <select class="form-select" id="single-select-field-edit-category" data-placeholder="Category"  style="width: 100%">
-                                <option></option>
-                                <option>Reactive</option>
-                                <option>Solution</option>
-                                <option>Conglomeration</option>
-                                <option>Algoritm</option>
-                                <option>Holistic</option>
+                            <select class="form-select" style="border: none">
+                                <option selected>Select category</option>
+                                <c:forEach items="${categories}" var="category">
+                                    <option value="${category.getId()}">${category.getCategoryName()}</option>
+                                </c:forEach>
                             </select>
                         </li>
+                        
+                        <%
+                            session = request.getSession(false);
+                            if (session != null && session.getAttribute("user") != null) {
+                            User user = (User) session.getAttribute("user");
+                        %>
                         <li class="list-group-item d-flex justify-content-start">
-                            <i class="bi bi-person m-1"></i>                        
-                            <select class="form-select" id="single-select-field-edit-organizer" data-placeholder="Organizer"  style="width: 100%">
-                                <option></option>
-                                <option>Reactive</option>
-                                <option>Solution</option>
-                                <option>Conglomeration</option>
-                                <option>Algoritm</option>
-                                <option>Holistic</option>
-                            </select>
+                            <i class="bi bi-person mx-1"></i>                        
+                            <div clas="m-3">Organizer:<span class="mx-2"><%= user.getUsername() %></span></div>
                         </li>
+                        <%
+                            }
+                        %>
+                        
                         <li class="list-group-item d-flex justify-content-start">
                             <i class="bi bi-people m-1"></i>                         
-                            <select class="form-select" id="multiple-select-field-edit-attendees" data-placeholder="Invite attendees" multiple style="width: 100%">
-                                <option>Christmas Island</option>
-                                <option>South Sudan</option>
-                                <option>Jamaica</option>
-                                <option>Kenya</option>
-                                <option>French Guiana</option>
-                                <option>Mayotta</option>
-                                <option>Liechtenstein</option>
-                                <option>Denmark</option>
-                                <option>Eritrea</option>
-                                <option>Gibraltar</option>
-                                <option>Saint Helena, Ascension and Tristan da Cunha</option>
-                                <option>Haiti</option>
-                                <option>Namibia</option>
-                                <option>South Georgia and the South Sandwich Islands</option>
-                                <option>Vietnam</option>
-                                <option>Yemen</option>
-                                <option>Philippines</option>
-                                <option>Benin</option>
-                                <option>Czech Republic</option>
-                                <option>Russia</option>
+                            <select class="form-select" id="multiple-select-field-add-attendees" data-placeholder="Invite attendees" multiple style="width: 100%">
+                                <c:forEach items="${users}" var="user">
+                                    <option value="${user.getId()}">${user.getUsername()}</option>
+                                </c:forEach>
                             </select>
                         </li>
                         <li class="list-group-item d-flex justify-content-start">
@@ -82,14 +73,8 @@
                     </ul>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button">
-                        <i class="bi bi-floppy"></i>
-                        <span>Save</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-lg"></i>
-                        <span>Cancel</span>
-                    </button> 
+                    <input class="btn btn-primary" type="submit" name="addEvent" value="Save">      
+                    <input class="btn btn-outline-primary" type="button" value="Cancel" data-bs-dismiss="modal">                                    
                 </div>
             </form>
         </div>

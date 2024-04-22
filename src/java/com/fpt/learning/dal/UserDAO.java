@@ -13,12 +13,41 @@ public class UserDAO extends DBContext<User> {
 
     PreparedStatement stm;
     ResultSet rs;
-    List<User> users = null;
+    
     private BcryptUtil bcryptUtil = BcryptUtil.getInstance();
 
     @Override
     public List<User> findAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return null;  
+    }
+    
+    public List<User> findAllAttendeens(int id) {
+        List<User> users = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM users WHERE id != ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, id);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                users.add(user);
+            }
+            return users;
+        } catch (Exception e) {
+            System.out.println("findAllAttendeens(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -54,7 +83,7 @@ public class UserDAO extends DBContext<User> {
     }
 
     @Override
-    public User insert(User user) {
+    public void insert(User user) {
         try {
             String sql = "INSERT INTO [dbo].[users]\n"
                     + "           ([username]\n"
@@ -67,14 +96,7 @@ public class UserDAO extends DBContext<User> {
             stm = connection.prepareStatement(sql, stm.RETURN_GENERATED_KEYS);
             stm.setString(1, user.getUsername());
             stm.setString(2, user.getPassword());
-            stm.executeUpdate();
-
-            rs = stm.getGeneratedKeys();
-            if (rs.next()) {
-                int id = rs.getInt(1);
-                user.setId(id);
-            }
-            return findById(user.getId());
+            stm.executeUpdate();          
 
         } catch (Exception e) {
             System.out.println("insert(): " + e.getMessage());
@@ -87,7 +109,6 @@ public class UserDAO extends DBContext<User> {
                 }
             }
         }
-        return null;
     }
 
     @Override

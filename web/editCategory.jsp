@@ -1,4 +1,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    session = request.getSession(false);
+    if (session == null || session.getAttribute("user") == null) {
+        response.sendRedirect("login");
+    }
+%>
 <div class="modal fade" id="modalEditCategory" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -17,14 +23,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button">
-                        <i class="bi bi-floppy"></i>
-                        <span>Save</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-lg"></i>
-                        <span>Cancel</span>
-                    </button> 
+                    <input class="btn btn-primary" type="submit" name="addCategory" value="Save">
+                    <input class="btn btn-outline-primary" type="button" value="Cancel" data-bs-dismiss="modal">
                 </div>
             </form>
         </div>

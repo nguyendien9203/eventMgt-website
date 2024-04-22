@@ -1,6 +1,50 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <main class="col-md-6">
     <div class="row row-cols-2">
+        <c:forEach items="${categories}" var="category">
+            <div class="col p-1">           
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title d-flex justify-content-between">
+                            <span>${category.getCategoryName()}</span>
+                            <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditCategory">Edit</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalDeleteCategory">Delete</a></li>
+                            </ul>
+                            <jsp:include page="../editCategory.jsp"></jsp:include>
+                            <jsp:include page="../deleteCategory.jsp"></jsp:include>
+                            </h5>
+                            <div class="list-group list-group-flush">
+                            <c:forEach items="${events}" var="event">
+                                <c:if test="${category.getId() eq event.getCategoryId()}">
+                                    <a href="home?eventId=${event.getId()}&eventDetail=show" class="list-group-item">
+                                        <div class="fw-bold">${event.getTitle()}</div>
+                                        <div class="me-auto d-flex justify-content-between align-items-start">                               
+                                            ${event.getStartDate()}
+                                            <c:choose>
+                                                <c:when test="${event.getStatus() eq 'ONGOING'}">
+                                                    <span class="badge bg-success rounded-pill">${event.getStatus()}</span>
+                                                </c:when>
+                                                <c:when test="${event.getStatus() eq 'WAITING'}">
+                                                    <span class="badge bg-secondary rounded-pill">${event.getStatus()}</span>
+                                                </c:when>
+                                                <c:when test="${event.getStatus() eq 'FINISHED'}">
+                                                    <span class="badge bg-danger rounded-pill">${event.getStatus()}</span>
+                                                </c:when>
+                                            </c:choose>
+                                        </div>                           
+                                    </a>
+                                </c:if>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
         <div class="col p-1">
             <div class="card">
                 <div class="card-body">
@@ -13,40 +57,6 @@
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditCategory">Edit</a></li>
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalDeleteCategory">Delete</a></li>
                         </ul>
-                        <jsp:include page="../editCategory.jsp"></jsp:include>
-                        <jsp:include page="../deleteCategory.jsp"></jsp:include>
-                        </h5>
-                        <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item">
-                                <div class="fw-bold">Sự kiện của tôi ưeefsdfdf</div>
-                                <div class="me-auto d-flex justify-content-between align-items-start">                               
-                                    12:00 - 30p 
-                                    <span class="badge bg-secondary rounded-pill">Waiting</span>
-                                </div>                           
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <div class="fw-bold">Sự kiện của tôi ưeefsdfdf</div>
-                                <div class="me-auto d-flex justify-content-between align-items-start">                               
-                                    12:00 - 30p 
-                                    <span class="badge bg-success rounded-pill">On going</span>
-                                </div>                           
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col p-1">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title d-flex justify-content-between">
-                            <span>Card title</span>
-                            <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditCategory">Edit</a></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalDeleteCategory">Delete</a></li>
-                            </ul>
                         <jsp:include page="../editCategory.jsp"></jsp:include>
                         <jsp:include page="../deleteCategory.jsp"></jsp:include>
                         </h5>
@@ -100,7 +110,7 @@
             <div class="card-body d-none">
                 <p class="card-text d-flex justify-content-center align-items-center">Nothing event for the day</p>
             </div>
-            <div class="card-body">
+            <div class="card-body  d-none">
                 <ul class="list-group list-group-flush">               
                     <li class="list-group-item d-flex justify-content-start">
                         <i class="bi bi-calendar4-event"></i>
@@ -194,7 +204,7 @@
                 </li>
             </ul>
         </div>
-        <div class="card-body d-none">
+        <div class="card-body">
             <form>
                 <ul class="list-group list-group-flush">               
                     <li class="list-group-item d-flex justify-content-start">

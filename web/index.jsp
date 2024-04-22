@@ -17,6 +17,12 @@
 
     </head>
     <body>
+        <%
+            session = request.getSession(false);
+            if (session == null || session.getAttribute("user") == null) {
+                response.sendRedirect("login");
+            }
+        %>
         <div class="container" style="height: 100vh;">
             <jsp:include page="layout/nav.jsp"></jsp:include>
             <div class="row mt-2" style="height: 90%;">
@@ -24,7 +30,24 @@
                 <jsp:include page="layout/main.jsp"></jsp:include>
             </div>
         </div>
-    
-    <jsp:include page="layout/script.jsp"></jsp:include>
-</body>
+            
+        <% String addSuccess = (String) request.getSession().getAttribute("addSuccess"); %>
+        <% if (addSuccess != null && request.getAttribute("errs") == null) { %>
+        <div class="toast-container top-0 end-0 p-3">
+            <div id="liveToast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <%= addSuccess %>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <%            
+            session.removeAttribute("addSuccess");
+            }
+        %>
+
+        <jsp:include page="layout/script.jsp"></jsp:include>
+    </body>
 </html>

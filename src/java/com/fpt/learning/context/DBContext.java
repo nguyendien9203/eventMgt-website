@@ -16,7 +16,7 @@ public abstract class DBContext<T> {
         try {
             String user = "sa";
             String pass = "123";
-            String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=MyEvent";
+            String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=event_mgt";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, user, pass);
         } catch (ClassNotFoundException | SQLException ex) {
@@ -28,7 +28,7 @@ public abstract class DBContext<T> {
 
     public abstract T findById(int id);
 
-    public abstract T insert(T model);
+    public abstract void insert(T model);
 
     public abstract void update(T model);
 

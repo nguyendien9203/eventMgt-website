@@ -43,23 +43,26 @@
                 </div>
             </div>
         </div>
-        <% } %>
+        <%            
+            session.removeAttribute("registerSuccess");
+            }
+        %>
 
-    <c:forEach items="${errs}" var="err">
-        <div class="toast-container top-0 end-0 p-3">
+        <c:forEach items="${errs}" var="err">
+            <div class="toast-container top-0 end-0 p-3">
 
-            <div id="liveToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        ${err}
+                <div id="liveToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${err}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
-        </div>
-    </c:forEach>
-</div>
+        </c:forEach>
+    </div>
 
-<jsp:include page="layout/script.jsp"></jsp:include>
+    <jsp:include page="layout/script.jsp"></jsp:include>
 </body>
 </html>

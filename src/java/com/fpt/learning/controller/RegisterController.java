@@ -75,14 +75,12 @@ public class RegisterController extends HttpServlet {
             user.setUsername(username);
             user.setPassword(hashPassword);
 
-            User insertedUser = userDao.insert(user);
+            userDao.insert(user);
 
-            if (insertedUser != null) {
-                request.getSession().setAttribute("registerSuccess", "Register successfully");
-                response.sendRedirect(request.getContextPath() + "/login");
-                return;
-            }
-
+            request.getSession().setAttribute("registerSuccess", "Register successfully");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+            
         }
 
         request.setAttribute("errs", errs);

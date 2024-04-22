@@ -56,9 +56,12 @@ public class LoginController extends HttpServlet {
         if (!flag) {
             if (userDao.login(username, password)) {
                 User user = userDao.findByUsername(username);
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                response.sendRedirect("home");
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.setAttribute("user", user);
+                    response.sendRedirect("home");
+                    return;
+                }
                 return;
             } else {
                 errs.add("Invalid username or password");
