@@ -8,6 +8,7 @@
         response.sendRedirect("login");
     }
 %>
+
 <div class="modal fade" id="exampleModalAddEvent" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -27,25 +28,24 @@
 
                             
 
-                            <input type="date" class="form-control" name="startDate" value="">
+                            <%
+                                // Tạo đối tượng DateTimeFormatter với định dạng yyyy-MM-dd
+                                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                // Chuyển đổi LocalDate thành chuỗi với định dạng mong muốn
+                                String currentDate = java.time.LocalDate.now().format(formatter);
+                            %>
+
+                            <input type="date" class="form-control" name="startDate" value="<%= currentDate %>">
                             <span class="p-2">To</span>
-                            <input type="date" class="form-control mx-2" name="endDate" value="">
+                            <input type="date" class="form-control" name="endDate" value="<%= currentDate %>">
+
 
 
                         </li>
                         <li class="list-group-item d-flex justify-content-start">
                             <i class="bi bi-geo-alt m-1"></i>
                             <input type="text" class="form-control" placeholder="Location" name="location" style="border: none">   
-                        </li>
-                        <li class="list-group-item d-flex justify-content-start">
-                            <i class="bi bi-text-center m-1"></i>                       
-                            <select class="form-select" name="categoryId" style="border: none">
-                                <option selected>Select category</option>
-                                <c:forEach items="${categories}" var="category">
-                                    <option value="${category.getId()}">${category.getCategoryName()}</option>
-                                </c:forEach>
-                            </select>
-                        </li>
+                        </li>                       
 
                         <%
                             session = request.getSession(false);
@@ -63,8 +63,8 @@
                             <i class="bi bi-people m-1"></i> 
 
                             <select class="form-select" name="attendeesId" id="multiple-select-field-add-attendees" data-placeholder="Invite attendees" multiple style="width: 100%">
-                                <c:forEach items="${users}" var="user">
-                                    <option value="${user.getId()}">${user.getUsername()}</option>
+                                <c:forEach items="${attendees}" var="attendee">
+                                    <option value="${attendee.getId()}">${attendee.getUsername()}</option>
                                 </c:forEach>
                             </select>
                         </li>

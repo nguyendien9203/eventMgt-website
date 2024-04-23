@@ -13,12 +13,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
     int id;
-    int categoryId;
-    String categoryName;
-    String title;
-    String location;
+    String title;   
     String startDate;
     String endDate;
+    String location;
     String description;
     String status;
     Timestamp createdAt;

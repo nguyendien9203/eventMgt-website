@@ -49,6 +49,65 @@ public class UserDAO extends DBContext<User> {
         }
         return null;
     }
+    
+    public List<User> findAllAttendeesByStatusAttendeesAndEventId(int eventId, String statusAttendees) {
+        List<User> users = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM event_user eu INNER JOIN users u ON eu.user_id = u.id "
+                    + "WHERE eu.event_id = ? AND eu.status = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, eventId);
+            stm.setString(2, statusAttendees);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                users.add(user);
+            }
+            return users;
+        } catch (Exception e) {
+            System.out.println("findAllAttendeesByStatusAttendeesAndEventId(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
+    
+    public User findOrganizerByRoleAndEventId(int eventId, String role) {
+        try {
+            String sql = "SELECT * FROM event_user eu INNER JOIN users u ON eu.user_id = u.id "
+                    + "WHERE eu.event_id = ? AND eu.role = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, eventId);
+            stm.setString(2, role);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                return user;
+            }
+            
+        } catch (Exception e) {
+            System.out.println("findOrganizerByRoleAndEventId(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
 
     @Override
     public User findById(int id) {
@@ -70,6 +129,36 @@ public class UserDAO extends DBContext<User> {
             }
         } catch (Exception e) {
             System.out.println("findById(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
+    
+    public User findAttendeesByUserIdAndEventIdAndRole(int userId, int eventId, String role) {
+        try {
+            String sql = "SELECT * FROM event_user eu JOIN users u ON eu.user_id = u.id "
+                    + "WHERE u.id = ? AND eu.event_id = ? AND eu.role = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, userId);
+            stm.setInt(2, eventId);
+            stm.setString(3, role);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setRole(rs.getString("role"));
+                return user;
+            }
+        } catch (Exception e) {
+            System.out.println("findAttendeesByUserIdAndEventIdAndRole(): " + e.getMessage());
         } finally {
             if (stm != null) {
                 try {

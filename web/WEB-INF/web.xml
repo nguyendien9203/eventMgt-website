@@ -17,10 +17,6 @@
         <servlet-class>com.fpt.learning.controller.LogoutController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CategoryController</servlet-name>
-        <servlet-class>com.fpt.learning.controller.CategoryController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>EventController</servlet-name>
         <servlet-class>com.fpt.learning.controller.EventController</servlet-class>
     </servlet>
@@ -39,10 +35,6 @@
     <servlet-mapping>
         <servlet-name>LogoutController</servlet-name>
         <url-pattern>/logout</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CategoryController</servlet-name>
-        <url-pattern>/category</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EventController</servlet-name>

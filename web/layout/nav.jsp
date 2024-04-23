@@ -16,13 +16,6 @@
                     <jsp:include page="../addEvent.jsp"></jsp:include>
 
                 </li>
-                <li class="nav-item mx-2">
-                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModalAddCategory">
-                        <i class="bi bi-text-center"></i>
-                        <span>New Category</span>
-                    </button>
-                    <jsp:include page="../addCategory.jsp"></jsp:include>
-                </li>
                 <li class="nav-item dropdown">
                     <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-funnel"></i>

@@ -40,11 +40,12 @@ public class EventController extends HttpServlet {
         String startDateStr = request.getParameter("startDate");
         String endDateStr = request.getParameter("endDate");
         String location = request.getParameter("location");
-        String categoryId = request.getParameter("categoryId");
         String[] attendeesIds = request.getParameterValues("attendeesId");
         String description = request.getParameter("description");
 
         HttpSession session = request.getSession(false);
+
+        List<String> errs = new ArrayList<>();
 
         User organizer = null;
         if (session != null && session.getAttribute("user") != null) {
@@ -52,25 +53,37 @@ public class EventController extends HttpServlet {
 
         }
 
+        
+
         //response.getWriter().println(startDateTimeString);
         List<Integer> attendeesList = new ArrayList<>();
-
-        if (attendeesIds != null && attendeesIds.length != 0) {
-            for (String attendeeId : attendeesIds) {
-                attendeesList.add(Integer.parseInt(attendeeId));
-            }
-        }
 
         try {
 
             if (request.getParameter("addEvent") != null && request.getParameter("addEvent").equals("Save")) {
                 Event event = new Event();
-                event.setTitle(title);
+                
+                if(!title.isBlank() || title != null) {
+                    event.setTitle(title);
+                }else {
+                    event.setTitle(null);
+                }
+                
                 event.setStartDate(startDateStr);
                 event.setEndDate(endDateStr);
-                event.setLocation(location);
-                event.setCategoryId(Integer.parseInt(categoryId));
-                event.setDescription(description);
+                
+                if(!title.isBlank() || title != null) {
+                    event.setLocation(location);
+                }else {
+                    event.setTitle(null);
+                }
+                
+                if(!title.isBlank() || title != null) {
+                    event.setDescription(description);
+                }else {
+                    event.setTitle(null);
+                }
+                
 
                 LocalDate startDate = LocalDate.parse(startDateStr);
                 LocalDate endDate = LocalDate.parse(endDateStr);
@@ -86,7 +99,17 @@ public class EventController extends HttpServlet {
                     event.setStatus(StatusEvent.WAITING.toString());
                 }
 
-                edao.insertEvent(event, attendeesList, organizer.getId());
+                if (attendeesIds != null && attendeesIds.length != 0) {
+                    for (String attendeeId : attendeesIds) {
+                        attendeesList.add(Integer.parseInt(attendeeId));
+                    }
+                    
+                    edao.insertEvent(event, attendeesList, organizer.getId());
+                }else {
+                    edao.insertEvent(event, organizer.getId());
+                }
+
+                
 
                 request.getSession().setAttribute("addSuccess", "Add successfully");
                 response.sendRedirect(request.getContextPath() + "/home");

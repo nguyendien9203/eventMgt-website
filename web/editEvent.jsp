@@ -34,16 +34,7 @@
                             <i class="bi bi-geo-alt m-1"></i>
                             <input type="text" class="form-control" placeholder="Location" style="border: none">   
 
-                        </li>
-                        <li class="list-group-item d-flex justify-content-start">
-                            <i class="bi bi-text-center m-1"></i>                       
-                            <select class="form-select" style="border: none">
-                                <option selected>Select category</option>
-                                <c:forEach items="${categories}" var="category">
-                                    <option value="${category.getId()}">${category.getCategoryName()}</option>
-                                </c:forEach>
-                            </select>
-                        </li>
+                        </li>                       
                         
                         <%
                             session = request.getSession(false);
