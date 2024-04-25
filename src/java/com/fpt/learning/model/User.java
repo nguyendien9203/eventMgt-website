@@ -18,6 +18,7 @@ public class User {
     String username;
     String password;
     String role;
+    String statusAttendees;
     Timestamp createdAt;
     Timestamp updateAt;
 }

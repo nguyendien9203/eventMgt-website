@@ -27,6 +27,7 @@ public class HomeController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
+        String keywordSearch = request.getParameter("keywordSearch");
         List<User> attendees = null;
         List<Event> eventsOfUser = null;
 
@@ -34,7 +35,12 @@ public class HomeController extends HttpServlet {
             User userSession = (User) session.getAttribute("user");
             attendees = udao.findAllAttendeens(userSession.getId());
             
-            eventsOfUser = edao.findAllByUserIdAndRole(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString());
+            if(keywordSearch != null) {
+                eventsOfUser = edao.search(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString(), keywordSearch);              
+                
+            }else {
+                eventsOfUser = edao.findAllByUserIdAndRole(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString());
+            }
             
             if (request.getParameter("eventId") != null && request.getParameter("eventDetail").equals("show")) {
                 String eventId = request.getParameter("eventId");
@@ -70,13 +76,38 @@ public class HomeController extends HttpServlet {
 
         request.setAttribute("eventsOfUser", eventsOfUser);
         request.setAttribute("attendees", attendees);
+        request.setAttribute("keywordSearch", keywordSearch);
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        if(request.getParameter("eventId") != null && request.getParameter("userId") != null) {
+            String eventId = request.getParameter("eventId");
+            String userId =  request.getParameter("userId");
+            
+            
+            if(request.getParameter("confirmStatusAttendees").equals("Accept") && request.getParameter("confirmStatusAttendees") != null) {
+                edao.updateStatusOfAttendee(Integer.parseInt(eventId), Integer.parseInt(userId), StatusAttendees.ACCEPT.toString());
+            }else if(request.getParameter("confirmStatusAttendees").equals("Acceptable") && request.getParameter("confirmStatusAttendees") != null) {
+                edao.updateStatusOfAttendee(Integer.parseInt(eventId), Integer.parseInt(userId), StatusAttendees.ACCEPTABLE.toString());
+            }else {
+                edao.updateStatusOfAttendee(Integer.parseInt(eventId), Integer.parseInt(userId), StatusAttendees.REJECT.toString());
+            }
+            
+//            if(request.getParameter("edit") != null && request.getParameter("edit").equals("Edit")) {
+//                Event eventOfOrganizerUpdate = edao.findByEventIdAndRole(Integer.parseInt(userId), Integer.parseInt(eventId), RoleUser.ORGANIZER.toString());
+//                request.setAttribute("eventOfOrganizerUpdate", eventOfOrganizerUpdate);
+//                doGet(request, response);
+//            }
+            
+            response.sendRedirect("home?eventId=" + eventId + "&eventDetail=show");
+        }
+        
+        
+           
+        
     }
 
     @Override

@@ -13,14 +13,14 @@ public class UserDAO extends DBContext<User> {
 
     PreparedStatement stm;
     ResultSet rs;
-    
+
     private BcryptUtil bcryptUtil = BcryptUtil.getInstance();
 
     @Override
     public List<User> findAll() {
-        return null;  
+        return null;
     }
-    
+
     public List<User> findAllAttendeens(int id) {
         List<User> users = new ArrayList<>();
         try {
@@ -49,7 +49,9 @@ public class UserDAO extends DBContext<User> {
         }
         return null;
     }
+
     
+
     public List<User> findAllAttendeesByStatusAttendeesAndEventId(int eventId, String statusAttendees) {
         List<User> users = new ArrayList<>();
         try {
@@ -79,7 +81,7 @@ public class UserDAO extends DBContext<User> {
         }
         return null;
     }
-    
+
     public User findOrganizerByRoleAndEventId(int eventId, String role) {
         try {
             String sql = "SELECT * FROM event_user eu INNER JOIN users u ON eu.user_id = u.id "
@@ -92,9 +94,10 @@ public class UserDAO extends DBContext<User> {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setUsername(rs.getString("username"));
+                user.setRole(rs.getString("role"));
                 return user;
             }
-            
+
         } catch (Exception e) {
             System.out.println("findOrganizerByRoleAndEventId(): " + e.getMessage());
         } finally {
@@ -140,7 +143,7 @@ public class UserDAO extends DBContext<User> {
         }
         return null;
     }
-    
+
     public User findAttendeesByUserIdAndEventIdAndRole(int userId, int eventId, String role) {
         try {
             String sql = "SELECT * FROM event_user eu JOIN users u ON eu.user_id = u.id "
@@ -155,6 +158,7 @@ public class UserDAO extends DBContext<User> {
                 user.setId(rs.getInt("id"));
                 user.setUsername(rs.getString("username"));
                 user.setRole(rs.getString("role"));
+                user.setStatusAttendees(rs.getString("status"));
                 return user;
             }
         } catch (Exception e) {
@@ -185,7 +189,7 @@ public class UserDAO extends DBContext<User> {
             stm = connection.prepareStatement(sql, stm.RETURN_GENERATED_KEYS);
             stm.setString(1, user.getUsername());
             stm.setString(2, user.getPassword());
-            stm.executeUpdate();          
+            stm.executeUpdate();
 
         } catch (Exception e) {
             System.out.println("insert(): " + e.getMessage());
@@ -251,15 +255,11 @@ public class UserDAO extends DBContext<User> {
 
     public static void main(String[] args) {
         UserDAO udao = new UserDAO();
-        User user = new User();
-        user.setUsername("nguyendien920");
-        user.setPassword("abcd12345");
-        if (udao.login("diennvhe171038", "abcd12345")) {
+        User user = udao.findAttendeesByUserIdAndEventIdAndRole(2, 1, "ATTENDEES");
+        System.out.println(user);
 
-            System.out.println("success");
-        } else {
-            System.out.println("failed");
-        }
+        User u = udao.findOrganizerByRoleAndEventId(1, "ORGANIZER");
+        System.out.println(u);
     }
 
 }

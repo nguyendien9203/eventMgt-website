@@ -4,6 +4,7 @@
  */
 package com.fpt.learning.controller;
 
+import com.fpt.learning.constant.RoleUser;
 import com.fpt.learning.constant.StatusEvent;
 import com.fpt.learning.dal.EventDAO;
 import com.fpt.learning.model.Event;
@@ -15,13 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class EventController extends HttpServlet {
 
@@ -42,79 +38,113 @@ public class EventController extends HttpServlet {
         String location = request.getParameter("location");
         String[] attendeesIds = request.getParameterValues("attendeesId");
         String description = request.getParameter("description");
+        String eventId = request.getParameter("eventId");
 
+//        response.getWriter().println(title);
+//        response.getWriter().println(startDateStr);
+//        response.getWriter().println(endDateStr);
+//        response.getWriter().println(location);
+//        response.getWriter().println(attendeesIds);
+//        response.getWriter().println(description);
+//        response.getWriter().println(eventId);
+//        
         HttpSession session = request.getSession(false);
 
-        List<String> errs = new ArrayList<>();
-
         User organizer = null;
-        if (session != null && session.getAttribute("user") != null) {
+        if (session != null && session.getAttribute("user") != null && organizer == null) {
             organizer = (User) session.getAttribute("user");
-
         }
-
-        
 
         //response.getWriter().println(startDateTimeString);
         List<Integer> attendeesList = new ArrayList<>();
 
+        Event event = new Event();
+
+        if (eventId != null) {
+            event.setId(Integer.parseInt(eventId));
+        }
+
+        if (title != null && !title.isBlank()) {
+            event.setTitle(title);
+        } else {
+            event.setTitle(null);
+        }
+
+        event.setStartDate(startDateStr);
+        event.setEndDate(endDateStr);
+
+        if (location != null && !location.isBlank()) {
+            event.setLocation(location);
+        } else {
+            event.setLocation(null);
+        }
+
+        if (description != null && !description.isBlank()) {
+            event.setDescription(description);
+        } else {
+            event.setDescription(null);
+        }
+
+        if (startDateStr != null && endDateStr != null) {
+            LocalDate startDate = LocalDate.parse(startDateStr);
+            LocalDate endDate = LocalDate.parse(endDateStr);
+
+            // LocalDateTime hiện tại
+            LocalDate currentDate = LocalDate.now();
+
+            if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate.plusDays(1))) {
+                event.setStatus(StatusEvent.ONGOING.toString());
+            } else if (currentDate.isAfter(endDate)) {
+                event.setStatus(StatusEvent.FINISHED.toString());
+            } else {
+                event.setStatus(StatusEvent.WAITING.toString());
+            }
+        }
+
         try {
 
             if (request.getParameter("addEvent") != null && request.getParameter("addEvent").equals("Save")) {
-                Event event = new Event();
-                
-                if(!title.isBlank() || title != null) {
-                    event.setTitle(title);
-                }else {
-                    event.setTitle(null);
-                }
-                
-                event.setStartDate(startDateStr);
-                event.setEndDate(endDateStr);
-                
-                if(!title.isBlank() || title != null) {
-                    event.setLocation(location);
-                }else {
-                    event.setTitle(null);
-                }
-                
-                if(!title.isBlank() || title != null) {
-                    event.setDescription(description);
-                }else {
-                    event.setTitle(null);
-                }
-                
-
-                LocalDate startDate = LocalDate.parse(startDateStr);
-                LocalDate endDate = LocalDate.parse(endDateStr);
-
-                // LocalDateTime hiện tại
-                LocalDate currentDate = LocalDate.now();
-
-                if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate.plusDays(1))) {
-                    event.setStatus(StatusEvent.ONGOING.toString());
-                } else if (currentDate.isAfter(endDate)) {
-                    event.setStatus(StatusEvent.FINISHED.toString());
-                } else {
-                    event.setStatus(StatusEvent.WAITING.toString());
-                }
 
                 if (attendeesIds != null && attendeesIds.length != 0) {
                     for (String attendeeId : attendeesIds) {
                         attendeesList.add(Integer.parseInt(attendeeId));
                     }
-                    
+
                     edao.insertEvent(event, attendeesList, organizer.getId());
-                }else {
+                } else {
                     edao.insertEvent(event, organizer.getId());
                 }
-
-                
 
                 request.getSession().setAttribute("addSuccess", "Add successfully");
                 response.sendRedirect(request.getContextPath() + "/home");
                 return;
 
+            }
+
+            if (request.getParameter("editEvent") != null && request.getParameter("editEvent").equals("Save")) {
+                if (attendeesIds != null && attendeesIds.length != 0) {
+                    for (String attendeeId : attendeesIds) {
+                        attendeesList.add(Integer.parseInt(attendeeId));
+                    }
+
+                    edao.updateEvent(event, attendeesList, RoleUser.ATTENDEES.toString());
+                } else {
+                    edao.updateEvent(event, RoleUser.ATTENDEES.toString());
+                }
+
+                request.getSession().setAttribute("editSuccess", "Edit successfully");
+                response.sendRedirect(request.getContextPath() + "/home?eventId=" + event.getId() + "&eventDetail=show");
+                return;
+            }
+
+            if (request.getParameter("deleteEvent") != null && request.getParameter("deleteEvent").equals("Delete")) {
+                edao.delete(event.getId());
+
+                request.getSession().setAttribute("deleteSuccess", "Delete successfully");
+                response.sendRedirect(request.getContextPath() + "/home");
+                return;
+
+                //response.getWriter().println(event.getId());
             }
         } catch (Exception e) {
             e.printStackTrace();

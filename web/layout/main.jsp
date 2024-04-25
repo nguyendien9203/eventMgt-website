@@ -105,7 +105,7 @@
                                     <ol class="collapse" id="collapse1">
                                         <c:forEach items="${usersAccept}" var="userAccept">
                                             <li class="my-1">${userAccept.getUsername()}</li>
-                                        </c:forEach>                                                 
+                                            </c:forEach>                                                 
                                     </ol>
                                 </div>
 
@@ -125,7 +125,7 @@
                                     <ol class="collapse" id="collapse3">
                                         <c:forEach items="${usersReject}" var="userReject">
                                             <li class="my-1">${userReject.getUsername()}</li>
-                                        </c:forEach>
+                                            </c:forEach>
                                     </ol>
                                 </div>
 
@@ -139,16 +139,21 @@
                             </span>
                         </li>
                         <li class="list-group-item mt-3">
-                            <form action="home" method="post">
-                                <input type="hidden" name="evenId" value="${eventOfOrganizer.getId()}">
-                                <input class="btn btn-outline-primary" type="submit" value="Edit" data-bs-toggle="modal" data-bs-target="#modalEditEvent">                                                                   
-                                <input class="btn btn-outline-secondary mx-2" type="submit" value="Delete" data-bs-toggle="modal" data-bs-target="#modalDeleteEvent">
-                                <jsp:include page="../editEvent.jsp"></jsp:include>        
-                                <jsp:include page="../deleteEvent.jsp"></jsp:include>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEditEvent">
+                                <i class="bi bi-pencil"></i>
+                                <span>Edit</span>
+                            </button>
+                            <button class="btn btn-outline-secondary mx-1" type="button" data-bs-toggle="modal" data-bs-target="#modalDeleteEvent">
+                                <i class="bi bi-calendar-x"></i>
+                                <span>Delete</span>
+                            </button>
+                            
+                            <jsp:include page="../editEvent.jsp"></jsp:include>        
+                            <jsp:include page="../deleteEvent.jsp"></jsp:include>
+
+                        </li>
+                    </ul>
+                </div>
             </c:when>
             <c:when test="${not empty eventOfAttendees}">
                 <div class="card-body">                   
@@ -178,14 +183,14 @@
                                 <div><span>${organizer.getUsername()}</span> <span class="mx-1">is the organizer</span></div>
                                 <small>
                                     <c:choose>
-                                        <c:when test="${attendee.getRole() == 'ACCEPT'}">
+                                        <c:when test="${attendee.getStatusAttendees() == 'ACCEPT'}">
                                             You have accepted
                                         </c:when>
-                                        <c:when test="${attendee.getRole() == 'ACCEPTABLE'}">
+                                        <c:when test="${attendee.getStatusAttendees() == 'ACCEPTABLE'}">
                                             You have temporarily accepted
                                         </c:when>
-                                        <c:when test="${attendee.getRole() == 'REJECT'}">
-                                            You refused
+                                        <c:when test="${attendee.getStatusAttendees() == 'REJECT'}">
+                                            You rejected
                                         </c:when>
                                         <c:otherwise>
                                             You have not responded yet
@@ -200,14 +205,29 @@
                                 ${eventOfAttendees.getDescription()} 
                             </span>
                         </li>
-                        <li class="list-group-item mt-3 d-flex justify-content-start">
-                            <form action="home" method="post">
-                                <input type="hidden" name="eventId" value="${eventOfAttendees.getId()}">
-                                <input class="btn btn-outline-success mx-1" type="submit" value="Accept">                                      
-                                <input class="btn btn-outline-secondary" type="submit" value="Acceptable">
-                                <input class="btn btn-outline-danger mx-1" type="submit" value="Reject">
-                            </form>
-                        </li>
+                        <c:set var="endDateLocalDate" value="${LocalDate.parse(eventOfAttendees.getEndDate())}" />
+
+
+                        <c:choose>
+                            <c:when test="${LocalDate.now().isAfter(endDateLocalDate)}">
+                                <li class="list-group-item mt-3 d-flex justify-content-start">
+                                    The event has ended
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+
+                                <li class="list-group-item mt-3 d-flex justify-content-start">
+                                    <form action="home" method="post">
+                                        <input type="hidden" name="eventId" value="${eventOfAttendees.getId()}">
+                                        <input type="hidden" name="userId" value="${attendee.getId()}">
+                                        <input class="btn btn-outline-success mx-1" type="submit" name="confirmStatusAttendees" value="Accept">                                      
+                                        <input class="btn btn-outline-secondary" type="submit" name="confirmStatusAttendees" value="Acceptable">
+                                        <input class="btn btn-outline-danger mx-1" type="submit" name="confirmStatusAttendees" value="Reject">
+                                    </form>
+                                </li>
+                            </c:otherwise>
+                        </c:choose>
+
                     </ul>
                     </form>
                 </div>

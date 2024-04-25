@@ -30,18 +30,6 @@
 </script>
 
 <script>
-    $('#single-select-field-add-category').select2({
-        theme: 'bootstrap-5'
-    });
-</script>
-
-<script>
-    $('#single-select-field-edit-category').select2({
-        theme: 'bootstrap-5'
-    });
-</script>
-
-<script>
     window.addEventListener('DOMContentLoaded', (event) => {
         var toasts = document.querySelectorAll('.toast');
         var offset = 0;
@@ -54,5 +42,6 @@
         });
     });
 </script>
+
 
 

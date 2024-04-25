@@ -47,7 +47,41 @@
             session.removeAttribute("addSuccess");
             }
         %>
+        
+        <% String editSuccess = (String) request.getSession().getAttribute("editSuccess"); %>
+        <% if (editSuccess != null && request.getAttribute("errs") == null) { %>
+        <div class="toast-container top-0 end-0 p-3">
+            <div id="liveToast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <%= editSuccess %>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <%            
+            session.removeAttribute("editSuccess");
+            }
+        %>
 
+        
+        <% String deleteSuccess = (String) request.getSession().getAttribute("deleteSuccess"); %>
+        <% if (deleteSuccess != null && request.getAttribute("errs") == null) { %>
+        <div class="toast-container top-0 end-0 p-3">
+            <div id="liveToast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <%= deleteSuccess %>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <%            
+            session.removeAttribute("deleteSuccess");
+            }
+        %>
         <jsp:include page="layout/script.jsp"></jsp:include>
     </body>
 </html>

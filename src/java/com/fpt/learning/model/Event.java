@@ -1,6 +1,7 @@
 package com.fpt.learning.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class Event {
     String location;
     String description;
     String status;
+    List<User> attendees;
     Timestamp createdAt;
     Timestamp updatedAt;
 }

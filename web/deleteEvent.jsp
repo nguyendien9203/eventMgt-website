@@ -15,12 +15,13 @@
                 <p class="fw-normal">Are you sure you want to delete this event?</p>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-primary">
-                    <span>Delete</span>
-                </a>
-                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                    <span>Cancel</span>
-                </button>                
+                <form action="event" method="post">
+                    <input type="hidden" name="eventId" value="${eventOfOrganizer.getId()}">
+                    <input type="submit" class="btn btn-primary" name="deleteEvent" value="Delete">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                        <span>Cancel</span>
+                    </button>  
+                </form>                            
             </div>
         </div>
     </div>
