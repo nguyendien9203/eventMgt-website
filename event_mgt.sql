@@ -18,7 +18,6 @@ CREATE TABLE [events] (
   [end_datetime] DATE,
   [location] NVARCHAR(100),
   [description] NVARCHAR(MAX),
-  [status] VARCHAR(50),
   [created_at] DATETIME,
   [updated_at] DATETIME
 )
@@ -39,6 +38,10 @@ GO
 
 ALTER TABLE [event_user] ADD FOREIGN KEY ([user_id]) REFERENCES [users] ([id])
 GO
+
+ALTER TABLE events
+DROP COLUMN [status];
+
 
 
 

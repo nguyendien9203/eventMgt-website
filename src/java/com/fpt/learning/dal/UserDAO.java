@@ -50,16 +50,16 @@ public class UserDAO extends DBContext<User> {
         return null;
     }
 
-    
-
-    public List<User> findAllAttendeesByStatusAttendeesAndEventId(int eventId, String statusAttendees) {
+    //find status of attendees is responded
+    public List<User> findStatusResponded(int eventId, String statusAttendees, String role) {
         List<User> users = new ArrayList<>();
         try {
             String sql = "SELECT * FROM event_user eu INNER JOIN users u ON eu.user_id = u.id "
-                    + "WHERE eu.event_id = ? AND eu.status = ?";
+                    + "WHERE eu.event_id = ? AND eu.status = ? AND eu.role = ?";
             stm = connection.prepareStatement(sql);
             stm.setInt(1, eventId);
             stm.setString(2, statusAttendees);
+            stm.setString(3, role);
             rs = stm.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -69,7 +69,37 @@ public class UserDAO extends DBContext<User> {
             }
             return users;
         } catch (Exception e) {
-            System.out.println("findAllAttendeesByStatusAttendeesAndEventId(): " + e.getMessage());
+            System.out.println("findStatusOfAttendees(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
+    
+    public List<User> findStatusNotResponded(int eventId, String role) {
+        List<User> users = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM event_user eu INNER JOIN users u ON eu.user_id = u.id "
+                    + "WHERE eu.event_id = ? AND eu.status IS NULL AND eu.role = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, eventId);
+            stm.setString(2, role);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                users.add(user);
+            }
+            return users;
+        } catch (Exception e) {
+            System.out.println("findStatusOfAttendees(): " + e.getMessage());
         } finally {
             if (stm != null) {
                 try {
@@ -256,10 +286,15 @@ public class UserDAO extends DBContext<User> {
     public static void main(String[] args) {
         UserDAO udao = new UserDAO();
         User user = udao.findAttendeesByUserIdAndEventIdAndRole(2, 1, "ATTENDEES");
-        System.out.println(user);
+        
 
         User u = udao.findOrganizerByRoleAndEventId(1, "ORGANIZER");
-        System.out.println(u);
+        
+        List<User> not = udao.findStatusNotResponded(9, "ATTENDEES");
+        System.out.println(not);
+        
+        
+        
     }
 
 }

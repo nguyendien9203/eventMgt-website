@@ -35,7 +35,7 @@ public class HomeController extends HttpServlet {
             User userSession = (User) session.getAttribute("user");
             attendees = udao.findAllAttendeens(userSession.getId());
             
-            if(keywordSearch != null) {
+            if(keywordSearch != null && !keywordSearch.isBlank()) {
                 eventsOfUser = edao.search(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString(), keywordSearch);              
                 
             }else {
@@ -48,25 +48,29 @@ public class HomeController extends HttpServlet {
                 Event eventOfOrganizer = edao.findByEventIdAndRole(userSession.getId(), Integer.parseInt(eventId), RoleUser.ORGANIZER.toString());
                 Event eventOfAttendees = edao.findByEventIdAndRole(userSession.getId(), Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
 
-                int acceptCount = edao.getCountOfAttendees(Integer.parseInt(eventId), StatusAttendees.ACCEPT.toString());
-                int acceptableCount = edao.getCountOfAttendees(Integer.parseInt(eventId), StatusAttendees.ACCEPTABLE.toString());
-                int rejectCount = edao.getCountOfAttendees(Integer.parseInt(eventId), StatusAttendees.REJECT.toString());
+                int acceptCount = edao.getCountStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPT.toString(), RoleUser.ATTENDEES.toString());
+                int acceptableCount = edao.getCountStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPTABLE.toString(), RoleUser.ATTENDEES.toString());
+                int rejectCount = edao.getCountStatusResponded(Integer.parseInt(eventId), StatusAttendees.REJECT.toString(), RoleUser.ATTENDEES.toString());
+                int notRespondedCount = edao.getCountStatusNotResponded(Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
 
                 User organizer = udao.findOrganizerByRoleAndEventId(Integer.parseInt(eventId), RoleUser.ORGANIZER.toString());
                 User attendee = udao.findAttendeesByUserIdAndEventIdAndRole(userSession.getId(), Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
 
-                List<User> usersAccept = udao.findAllAttendeesByStatusAttendeesAndEventId(Integer.parseInt(eventId), StatusAttendees.ACCEPT.toString());
-                List<User> usersAcceptable = udao.findAllAttendeesByStatusAttendeesAndEventId(Integer.parseInt(eventId), StatusAttendees.ACCEPTABLE.toString());
-                List<User> usersReject = udao.findAllAttendeesByStatusAttendeesAndEventId(Integer.parseInt(eventId), StatusAttendees.REJECT.toString());
+                List<User> usersAccept = udao.findStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPT.toString(), RoleUser.ATTENDEES.toString());
+                List<User> usersAcceptable = udao.findStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPTABLE.toString(), RoleUser.ATTENDEES.toString());
+                List<User> usersReject = udao.findStatusResponded(Integer.parseInt(eventId), StatusAttendees.REJECT.toString(), RoleUser.ATTENDEES.toString());
+                List<User> usersNotResponded = udao.findStatusNotResponded(Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
 
                 request.setAttribute("eventOfOrganizer", eventOfOrganizer);
                 request.setAttribute("eventOfAttendees", eventOfAttendees);
                 request.setAttribute("acceptCount", acceptCount);
                 request.setAttribute("acceptableCount", acceptableCount);
                 request.setAttribute("rejectCount", rejectCount);
+                request.setAttribute("notRespondedCount", notRespondedCount);
                 request.setAttribute("usersAccept", usersAccept);
                 request.setAttribute("usersAcceptable", usersAcceptable);
-                request.setAttribute("usersReject", usersReject);  
+                request.setAttribute("usersReject", usersReject); 
+                request.setAttribute("usersNotResponded", usersNotResponded); 
                 request.setAttribute("organizer", organizer); 
                 request.setAttribute("attendee", attendee); 
             }

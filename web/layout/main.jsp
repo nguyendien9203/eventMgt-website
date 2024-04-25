@@ -28,20 +28,24 @@
                                     <c:otherwise>
                                         <div class="fw-bold">${event.getTitle()}</div>
                                     </c:otherwise>
-                                </c:choose>                               
+                                </c:choose>     
+
+                                <c:set var="startDate" value="${LocalDate.parse(event.getStartDate())}" />
+                                <c:set var="endDate" value="${LocalDate.parse(event.getEndDate())}" />
 
                                 <div class="me-auto d-flex justify-content-between align-items-start"> 
                                     ${event.startDate}                                
                                     <c:choose>
-                                        <c:when test="${event.getStatus() eq 'ONGOING'}">
-                                            <span class="badge bg-success rounded-pill">${event.getStatus()}</span>
+                                        
+                                        <c:when test="${LocalDate.now().isBefore(startDate)}">
+                                            <span class="badge bg-secondary rounded-pill">WAITING</span>
                                         </c:when>
-                                        <c:when test="${event.getStatus() eq 'WAITING'}">
-                                            <span class="badge bg-secondary rounded-pill">${event.getStatus()}</span>
+                                        <c:when test="${LocalDate.now().isAfter(endDate)}">
+                                            <span class="badge bg-danger rounded-pill">FINISHED</span>
                                         </c:when>
-                                        <c:when test="${event.getStatus() eq 'FINISHED'}">
-                                            <span class="badge bg-danger rounded-pill">${event.getStatus()}</span>
-                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-success rounded-pill">ONGOING</span>
+                                        </c:otherwise>
                                     </c:choose>
                                 </div>                           
                             </a>                           
@@ -128,6 +132,16 @@
                                             </c:forEach>
                                     </ol>
                                 </div>
+                                    
+                                <div class="my-1" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse3" style="cursor: pointer">
+                                    <i class="bi bi-chevron-right"></i>
+                                    <span>Not responded:</span> <span class="mx-1">${notRespondedCount}</span>
+                                    <ol class="collapse" id="collapse4">
+                                        <c:forEach items="${usersNotResponded}" var="notResponded">
+                                            <li class="my-1">${notResponded.getUsername()}</li>
+                                            </c:forEach>
+                                    </ol>
+                                </div>
 
                             </span>
                         </li>
@@ -147,13 +161,13 @@
                                 <i class="bi bi-calendar-x"></i>
                                 <span>Delete</span>
                             </button>
-                            
+
                             <jsp:include page="../editEvent.jsp"></jsp:include>        
                             <jsp:include page="../deleteEvent.jsp"></jsp:include>
 
-                        </li>
-                    </ul>
-                </div>
+                            </li>
+                        </ul>
+                    </div>
             </c:when>
             <c:when test="${not empty eventOfAttendees}">
                 <div class="card-body">                   

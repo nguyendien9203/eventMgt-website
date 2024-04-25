@@ -19,7 +19,6 @@ public class Event {
     String endDate;
     String location;
     String description;
-    String status;
     List<User> attendees;
     Timestamp createdAt;
     Timestamp updatedAt;

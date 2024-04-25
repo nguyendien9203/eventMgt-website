@@ -46,9 +46,45 @@ WHERE eu.user_id = 1 AND eu.role = 'ATTENDEES';
 SELECT *
 FROM events e
 INNER JOIN event_user eu ON e.id = eu.event_id
-WHERE (eu.user_id = 2 AND eu.role = 'ORGANIZER')
-   OR (eu.user_id = 2 AND eu.role = 'ATTENDEES');
+WHERE ((eu.user_id = 1 AND eu.role = 'ORGANIZER')
+   OR (eu.user_id = 1 AND eu.role = 'ATTENDEES')) 
+   
+ORDER BY e.start_datetime ASC;
 
 
-   select * from categories
+
+   SELECT *
+FROM events e
+INNER JOIN event_user eu ON e.id = eu.event_id
+WHERE (eu.user_id = 1 AND (eu.role = 'ORGANIZER' OR eu.role = 'ATTENDEES'))
+GROUP BY e.start_datetime
+ORDER BY e.start_datetime DESC;
+
+SELECT e.*, MAX(e.start_datetime) AS max_start_datetime
+FROM events e
+INNER JOIN event_user eu ON e.id = eu.event_id
+WHERE (eu.user_id = 1 AND (eu.role = 'ORGANIZER' OR eu.role = 'ATTENDEES'))
+GROUP BY e.id, e.start_datetime
+ORDER BY max_start_datetime DESC;
+
+SELECT e.*
+FROM events e
+INNER JOIN event_user eu ON e.id = eu.event_id
+WHERE (eu.user_id = 1 AND (eu.role = 'ORGANIZER' OR eu.role = 'ATTENDEE'))
+GROUP BY e.id, e.start_datetime
+ORDER BY e.start_datetime DESC;
+
+SELECT e.*
+FROM events e
+INNER JOIN event_user eu ON e.id = eu.event_id
+WHERE (eu.user_id = 1 AND (eu.role = 'ORGANIZER' OR eu.role = 'ATTENDEE'))
+GROUP BY e.id, e.title, e.start_datetime, e.end_datetime, e.[location], e.[description], e.[status], e.created_at, e.updated_at
+ORDER BY e.start_datetime DESC;
+
+
+
+
+
+
+
 

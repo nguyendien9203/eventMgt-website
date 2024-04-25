@@ -16,55 +16,94 @@
                     <jsp:include page="../addEvent.jsp"></jsp:include>
 
                     </li>
-                    <li class="nav-item dropdown mx-2">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+<!--                    <li class="nav-item dropdown mx-2">                       
+                        <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
                             <i class="bi bi-funnel"></i>
                             <span>Filter</span>
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li class="m-1">
-                                <div class="btn-group">
-                                    <input type="checkbox">
-                                    <button type="button" class="btn btn-danger">Action</button>
-                                    <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="visually-hidden">Toggle Dropdown</span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Action</a></li>
-                                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="#">Separated link</a></li>
-                                    </ul>
+                        <form class="dropdown-menu dropend p-4" style="width: 200px;">
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="day">
+                                    <label class="form-check-label" for="dropdownCheck2">DAY</label>
                                 </div>
-                            </li>
-                            <li class="m-1">
-                                <input class="form-check-input mx-1" type="checkbox" value="" aria-label="...">
-                                ONGOING
-                            </li>
-                            <li class="m-1">
-                                <input class="form-check-input mx-1" type="checkbox" value="" aria-label="...">
-                                FINISHED
-                            </li> 
-                            <li class="m-1">
-                                <input class="form-check-input mx-1" type="checkbox" value="" aria-label="...">
-                                DAY
-                            </li>
-                            <li class="m-1">
-                                <input class="form-check-input mx-1" type="checkbox" value="" aria-label="...">
-                                WEEK
-                            </li>
-                            <li class="m-1">
-                                <input class="form-check-input mx-1" type="checkbox" value="" aria-label="...">
-                                MONTH
-                            </li> 
-                        </ul>
-                    </li>    
+                            </div>
+                            
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="week">
+                                    <label class="form-check-label" for="dropdownCheck2">WEEK</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="month">
+                                    <label class="form-check-label" for="dropdownCheck2">MONTH</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="ongoing">
+                                    <label class="form-check-label" for="dropdownCheck2">ONGOING</label>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="waiting">
+                                    <label class="form-check-label" for="dropdownCheck2">WAITING</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="finished">
+                                    <label class="form-check-label" for="dropdownCheck2">FINISHED</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="accept">
+                                    <label class="form-check-label" for="dropdownCheck2">ACCEPT</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="acceptable">
+                                    <label class="form-check-label" for="dropdownCheck2">ACCEPTABLE</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="reject">
+                                    <label class="form-check-label" for="dropdownCheck2">REJECT</label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check dropend">
+                                    <input type="checkbox" class="form-check-input" id="dropdownCheck2" name="filter" value="notResponded">
+                                    <label class="form-check-label" for="dropdownCheck2">NOT RESPONDED</label>
+                                </div>
+                            </div>
+                            
+                            <input type="submit" name="sendFilter" value="Send" class="btn btn-primary">
+                            
+                        </form>
+                    </li>    -->
                 </ul>
                 <form class="d-flex" role="search" action="home" method="get">
                     <input class="form-control me-2" type="search" name="keywordSearch" id="keywordSearch" value="${keywordSearch}" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-primary" type="submit" >Search</button>
-            </form>
+                    <button class="btn btn-outline-primary" type="submit" >Search</button>
+                </form>
         </div>
     </div>
 </nav>

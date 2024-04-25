@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -25,12 +26,27 @@
         %>
         <div class="container" style="height: 100vh;">
             <jsp:include page="layout/nav.jsp"></jsp:include>
-            <div class="row mt-2" style="height: 90%;">
+                <div class="row mt-2" style="height: 90%;">
                 <jsp:include page="layout/aside.jsp"></jsp:include>
                 <jsp:include page="layout/main.jsp"></jsp:include>
-            </div>
+                </div>
         </div>
-            
+        <c:if test="${not empty errs}">
+            <c:forEach items="${errs}" var="err">
+                <div class="toast-container top-0 end-0 p-3">
+
+                    <div id="liveToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                ${err}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </c:if>
+
         <% String addSuccess = (String) request.getSession().getAttribute("addSuccess"); %>
         <% if (addSuccess != null && request.getAttribute("errs") == null) { %>
         <div class="toast-container top-0 end-0 p-3">
@@ -47,7 +63,7 @@
             session.removeAttribute("addSuccess");
             }
         %>
-        
+
         <% String editSuccess = (String) request.getSession().getAttribute("editSuccess"); %>
         <% if (editSuccess != null && request.getAttribute("errs") == null) { %>
         <div class="toast-container top-0 end-0 p-3">
@@ -65,7 +81,7 @@
             }
         %>
 
-        
+
         <% String deleteSuccess = (String) request.getSession().getAttribute("deleteSuccess"); %>
         <% if (deleteSuccess != null && request.getAttribute("errs") == null) { %>
         <div class="toast-container top-0 end-0 p-3">
@@ -82,6 +98,10 @@
             session.removeAttribute("deleteSuccess");
             }
         %>
+
+        
+
+
         <jsp:include page="layout/script.jsp"></jsp:include>
     </body>
 </html>

@@ -5,8 +5,10 @@
 package com.fpt.learning.controller;
 
 import com.fpt.learning.constant.RoleUser;
+import com.fpt.learning.constant.StatusAttendees;
 import com.fpt.learning.constant.StatusEvent;
 import com.fpt.learning.dal.EventDAO;
+import com.fpt.learning.dal.UserDAO;
 import com.fpt.learning.model.Event;
 import com.fpt.learning.model.User;
 import java.io.IOException;
@@ -21,11 +23,65 @@ import java.util.ArrayList;
 
 public class EventController extends HttpServlet {
 
+    private UserDAO udao = new UserDAO();
     private EventDAO edao = new EventDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        String keywordSearch = request.getParameter("keywordSearch");
+        List<User> attendees = null;
+        List<Event> eventsOfUser = null;
+
+        if (session != null && session.getAttribute("user") != null) {
+            User userSession = (User) session.getAttribute("user");
+            attendees = udao.findAllAttendeens(userSession.getId());
+
+            if (keywordSearch != null) {
+                eventsOfUser = edao.search(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString(), keywordSearch);
+
+            } else {
+                eventsOfUser = edao.findAllByUserIdAndRole(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString());
+            }
+
+            if (request.getParameter("eventId") != null && request.getParameter("eventDetail").equals("show")) {
+                String eventId = request.getParameter("eventId");
+
+                Event eventOfOrganizer = edao.findByEventIdAndRole(userSession.getId(), Integer.parseInt(eventId), RoleUser.ORGANIZER.toString());
+                Event eventOfAttendees = edao.findByEventIdAndRole(userSession.getId(), Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
+
+                int acceptCount = edao.getCountStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPT.toString(), RoleUser.ATTENDEES.toString());
+                int acceptableCount = edao.getCountStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPTABLE.toString(), RoleUser.ATTENDEES.toString());
+                int rejectCount = edao.getCountStatusResponded(Integer.parseInt(eventId), StatusAttendees.REJECT.toString(), RoleUser.ATTENDEES.toString());
+                int notRespondedCount = edao.getCountStatusNotResponded(Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
+
+                User organizer = udao.findOrganizerByRoleAndEventId(Integer.parseInt(eventId), RoleUser.ORGANIZER.toString());
+                User attendee = udao.findAttendeesByUserIdAndEventIdAndRole(userSession.getId(), Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
+
+                List<User> usersAccept = udao.findStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPT.toString(), RoleUser.ATTENDEES.toString());
+                List<User> usersAcceptable = udao.findStatusResponded(Integer.parseInt(eventId), StatusAttendees.ACCEPTABLE.toString(), RoleUser.ATTENDEES.toString());
+                List<User> usersReject = udao.findStatusResponded(Integer.parseInt(eventId), StatusAttendees.REJECT.toString(), RoleUser.ATTENDEES.toString());
+                List<User> usersNotResponded = udao.findStatusNotResponded(Integer.parseInt(eventId), RoleUser.ATTENDEES.toString());
+
+                request.setAttribute("eventOfOrganizer", eventOfOrganizer);
+                request.setAttribute("eventOfAttendees", eventOfAttendees);
+                request.setAttribute("acceptCount", acceptCount);
+                request.setAttribute("acceptableCount", acceptableCount);
+                request.setAttribute("rejectCount", rejectCount);
+                request.setAttribute("notRespondedCount", notRespondedCount);
+                request.setAttribute("usersAccept", usersAccept);
+                request.setAttribute("usersAcceptable", usersAcceptable);
+                request.setAttribute("usersReject", usersReject); 
+                request.setAttribute("usersNotResponded", usersNotResponded); 
+                request.setAttribute("organizer", organizer); 
+                request.setAttribute("attendee", attendee); 
+            }
+        }
+
+        request.setAttribute("eventsOfUser", eventsOfUser);
+        request.setAttribute("attendees", attendees);
+        request.setAttribute("keywordSearch", keywordSearch);
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
@@ -47,8 +103,10 @@ public class EventController extends HttpServlet {
 //        response.getWriter().println(attendeesIds);
 //        response.getWriter().println(description);
 //        response.getWriter().println(eventId);
-//        
+        
         HttpSession session = request.getSession(false);
+        
+        List<String> errs = new ArrayList<>();
 
         User organizer = null;
         if (session != null && session.getAttribute("user") != null && organizer == null) {
@@ -70,8 +128,21 @@ public class EventController extends HttpServlet {
             event.setTitle(null);
         }
 
-        event.setStartDate(startDateStr);
-        event.setEndDate(endDateStr);
+        
+
+        if (startDateStr != null && endDateStr != null) {
+            LocalDate startDate = LocalDate.parse(startDateStr);
+            LocalDate endDate = LocalDate.parse(endDateStr);
+            if (startDate.isAfter(endDate)) {
+                errs.add("Start date cannot start after end date.");
+                request.setAttribute("errs", errs);
+                doGet(request, response);
+                return;
+            } else {
+                event.setStartDate(startDateStr);
+                event.setEndDate(endDateStr);
+            }
+        }
 
         if (location != null && !location.isBlank()) {
             event.setLocation(location);
@@ -84,22 +155,8 @@ public class EventController extends HttpServlet {
         } else {
             event.setDescription(null);
         }
-
-        if (startDateStr != null && endDateStr != null) {
-            LocalDate startDate = LocalDate.parse(startDateStr);
-            LocalDate endDate = LocalDate.parse(endDateStr);
-
-            // LocalDateTime hiện tại
-            LocalDate currentDate = LocalDate.now();
-
-            if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate.plusDays(1))) {
-                event.setStatus(StatusEvent.ONGOING.toString());
-            } else if (currentDate.isAfter(endDate)) {
-                event.setStatus(StatusEvent.FINISHED.toString());
-            } else {
-                event.setStatus(StatusEvent.WAITING.toString());
-            }
-        }
+        
+        //response.getWriter().println(event);
 
         try {
 
@@ -122,6 +179,7 @@ public class EventController extends HttpServlet {
             }
 
             if (request.getParameter("editEvent") != null && request.getParameter("editEvent").equals("Save")) {
+
                 if (attendeesIds != null && attendeesIds.length != 0) {
                     for (String attendeeId : attendeesIds) {
                         attendeesList.add(Integer.parseInt(attendeeId));

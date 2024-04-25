@@ -31,8 +31,9 @@ public class EventDAO extends DBContext<Event> {
             String sql = "SELECT *\n"
                     + "FROM events e\n"
                     + "INNER JOIN event_user eu ON e.id = eu.event_id\n"
-                    + "WHERE (eu.user_id = ? AND eu.role = ?)\n"
-                    + "   OR (eu.user_id = ? AND eu.role = ?);";
+                    + "WHERE ((eu.user_id = ? AND eu.role = ?)\n"
+                    + "   OR (eu.user_id = ? AND eu.role = ?)) \n"
+                    + "ORDER BY e.start_datetime ASC;";
             stm = connection.prepareStatement(sql);
             stm.setInt(1, id);
             stm.setString(2, organizer);
@@ -47,7 +48,6 @@ public class EventDAO extends DBContext<Event> {
                 event.setEndDate(String.valueOf(rs.getDate(4)));
                 event.setLocation(rs.getString(5));
                 event.setDescription(rs.getString(6));
-                event.setStatus(rs.getString(7));
                 events.add(event);
             }
             return events;
@@ -68,9 +68,12 @@ public class EventDAO extends DBContext<Event> {
     public List<Event> search(int id, String organizer, String attendees, String searchKeyword) {
         List<Event> events = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM events e INNER JOIN event_user eu ON e.id = eu.event_id "
-                    + "WHERE ((eu.user_id = ? AND eu.role = ?) OR (eu.user_id = ? AND eu.role = ?)) "
-                    + "AND e.title LIKE ?";
+            String sql = "SELECT *\n"
+                    + "FROM events e\n"
+                    + "INNER JOIN event_user eu ON e.id = eu.event_id\n"
+                    + "WHERE ((eu.user_id = ? AND eu.role = ?)\n"
+                    + "   OR (eu.user_id = ? AND eu.role = ?)) AND e.title LIKE ?\n"
+                    + "ORDER BY e.start_datetime ASC; ";
             stm = connection.prepareStatement(sql);
             stm.setInt(1, id);
             stm.setString(2, organizer);
@@ -86,7 +89,6 @@ public class EventDAO extends DBContext<Event> {
                 event.setEndDate(String.valueOf(rs.getDate(4)));
                 event.setLocation(rs.getString(5));
                 event.setDescription(rs.getString(6));
-                event.setStatus(rs.getString(7));
                 events.add(event);
             }
             return events;
@@ -126,7 +128,6 @@ public class EventDAO extends DBContext<Event> {
                     event.setEndDate(String.valueOf(rs.getDate(4)));
                     event.setLocation(rs.getString(5));
                     event.setDescription(rs.getString(6));
-                    event.setStatus(rs.getString(7));
                     event.setCreatedAt(rs.getTimestamp(8));
                     event.setAttendees(new ArrayList<>());
                 }
@@ -151,14 +152,40 @@ public class EventDAO extends DBContext<Event> {
         }
         return null;
     }
-
-    public int getCountOfAttendees(int eventId, String statusAttendees) {
+    
+    public int getCountStatusResponded(int eventId, String statusAttendees, String role) {
         int count = 0;
         try {
-            String sql = "SELECT COUNT(*) FROM event_user WHERE event_id = ? AND status = ?";
+            String sql = "SELECT COUNT(*) FROM event_user WHERE event_id = ? AND status = ? AND role = ?";
             stm = connection.prepareStatement(sql);
             stm.setInt(1, eventId);
             stm.setString(2, statusAttendees);
+            stm.setString(3, role);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return count;
+    }
+    
+    public int getCountStatusNotResponded(int eventId, String role) {
+        int count = 0;
+        try {
+            String sql = "SELECT COUNT(*) FROM event_user WHERE event_id = ? AND status IS NULL AND role = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, eventId);
+            stm.setString(2, role);
             rs = stm.executeQuery();
             if (rs.next()) {
                 count = rs.getInt(1);
@@ -185,11 +212,9 @@ public class EventDAO extends DBContext<Event> {
                     + "           ,[end_datetime]\n"
                     + "           ,[location]\n"
                     + "           ,[description]\n"
-                    + "           ,[status]\n"
                     + "           ,[created_at])\n"
                     + "     VALUES\n"
                     + "           (?\n"
-                    + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
@@ -217,7 +242,6 @@ public class EventDAO extends DBContext<Event> {
 
             stm.setString(4, event.getLocation());
             stm.setString(5, event.getDescription());
-            stm.setString(6, event.getStatus());
             stm.executeUpdate();
 
             ResultSet rs = stm.getGeneratedKeys();
@@ -294,11 +318,9 @@ public class EventDAO extends DBContext<Event> {
                     + "           ,[end_datetime]\n"
                     + "           ,[location]\n"
                     + "           ,[description]\n"
-                    + "           ,[status]\n"
                     + "           ,[created_at])\n"
                     + "     VALUES\n"
                     + "           (?\n"
-                    + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
                     + "           ,?\n"
@@ -326,7 +348,6 @@ public class EventDAO extends DBContext<Event> {
 
             stm.setString(4, event.getLocation());
             stm.setString(5, event.getDescription());
-            stm.setString(6, event.getStatus());
             stm.executeUpdate();
 
             ResultSet rs = stm.getGeneratedKeys();
@@ -501,7 +522,6 @@ public class EventDAO extends DBContext<Event> {
                         + "      ,[end_datetime] = ?\n"
                         + "      ,[location] = ?\n"
                         + "      ,[description] = ?\n"
-                        + "      ,[status] = ?\n"
                         + "      ,[updated_at] = GETDATE()\n"
                         + " WHERE id = ?";
                 stm = connection.prepareStatement(sqlEvent);
@@ -526,8 +546,7 @@ public class EventDAO extends DBContext<Event> {
 
                 stm.setString(4, event.getLocation());
                 stm.setString(5, event.getDescription());
-                stm.setString(6, event.getStatus());
-                stm.setInt(7, event.getId());
+                stm.setInt(6, event.getId());
                 stm.executeUpdate();
             }
 
@@ -575,7 +594,6 @@ public class EventDAO extends DBContext<Event> {
                         + "      ,[end_datetime] = ?\n"
                         + "      ,[location] = ?\n"
                         + "      ,[description] = ?\n"
-                        + "      ,[status] = ?\n"
                         + "      ,[updated_at] = GETDATE()\n"
                         + " WHERE id = ?";
                 stm = connection.prepareStatement(sqlEvent);
@@ -600,8 +618,7 @@ public class EventDAO extends DBContext<Event> {
 
                 stm.setString(4, event.getLocation());
                 stm.setString(5, event.getDescription());
-                stm.setString(6, event.getStatus());
-                stm.setInt(7, event.getId());
+                stm.setInt(6, event.getId());
                 stm.executeUpdate();
             }
 
@@ -681,7 +698,10 @@ public class EventDAO extends DBContext<Event> {
     public static void main(String[] args) {
         EventDAO edao = new EventDAO();
         List<Event> event = edao.search(1, "ORGANIZER", "ATTENDEES", "diennv");
-        System.out.println(event);
+        
+        
+        
+        
 
     }
 
