@@ -28,20 +28,22 @@ public class HomeController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         String keywordSearch = request.getParameter("keywordSearch");
+        User account = null;
         List<User> attendees = null;
         List<Event> eventsOfUser = null;
 
         if (session != null && session.getAttribute("user") != null) {
             User userSession = (User) session.getAttribute("user");
             attendees = udao.findAllAttendeens(userSession.getId());
-            
-            if(keywordSearch != null && !keywordSearch.isBlank()) {
-                eventsOfUser = edao.search(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString(), keywordSearch);              
-                
-            }else {
+
+            account = udao.findById(userSession.getId());
+
+            if (keywordSearch != null && !keywordSearch.isBlank()) {
+                eventsOfUser = edao.search(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString(), keywordSearch);
+            } else {
                 eventsOfUser = edao.findAllByUserIdAndRole(userSession.getId(), RoleUser.ORGANIZER.toString(), RoleUser.ATTENDEES.toString());
             }
-            
+
             if (request.getParameter("eventId") != null && request.getParameter("eventDetail").equals("show")) {
                 String eventId = request.getParameter("eventId");
 
@@ -69,49 +71,66 @@ public class HomeController extends HttpServlet {
                 request.setAttribute("notRespondedCount", notRespondedCount);
                 request.setAttribute("usersAccept", usersAccept);
                 request.setAttribute("usersAcceptable", usersAcceptable);
-                request.setAttribute("usersReject", usersReject); 
-                request.setAttribute("usersNotResponded", usersNotResponded); 
-                request.setAttribute("organizer", organizer); 
-                request.setAttribute("attendee", attendee); 
+                request.setAttribute("usersReject", usersReject);
+                request.setAttribute("usersNotResponded", usersNotResponded);
+                request.setAttribute("organizer", organizer);
+                request.setAttribute("attendee", attendee);
+
             }
         }
-
-        
 
         request.setAttribute("eventsOfUser", eventsOfUser);
         request.setAttribute("attendees", attendees);
         request.setAttribute("keywordSearch", keywordSearch);
+        request.setAttribute("account", account);
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if(request.getParameter("eventId") != null && request.getParameter("userId") != null) {
+        if (request.getParameter("eventId") != null && request.getParameter("userId") != null) {
             String eventId = request.getParameter("eventId");
-            String userId =  request.getParameter("userId");
-            
-            
-            if(request.getParameter("confirmStatusAttendees").equals("Accept") && request.getParameter("confirmStatusAttendees") != null) {
+            String userId = request.getParameter("userId");
+
+            if (request.getParameter("confirmStatusAttendees").equals("Accept") && request.getParameter("confirmStatusAttendees") != null) {
                 edao.updateStatusOfAttendee(Integer.parseInt(eventId), Integer.parseInt(userId), StatusAttendees.ACCEPT.toString());
-            }else if(request.getParameter("confirmStatusAttendees").equals("Acceptable") && request.getParameter("confirmStatusAttendees") != null) {
+            } else if (request.getParameter("confirmStatusAttendees").equals("Acceptable") && request.getParameter("confirmStatusAttendees") != null) {
                 edao.updateStatusOfAttendee(Integer.parseInt(eventId), Integer.parseInt(userId), StatusAttendees.ACCEPTABLE.toString());
-            }else {
+            } else {
                 edao.updateStatusOfAttendee(Integer.parseInt(eventId), Integer.parseInt(userId), StatusAttendees.REJECT.toString());
             }
-            
+
 //            if(request.getParameter("edit") != null && request.getParameter("edit").equals("Edit")) {
 //                Event eventOfOrganizerUpdate = edao.findByEventIdAndRole(Integer.parseInt(userId), Integer.parseInt(eventId), RoleUser.ORGANIZER.toString());
 //                request.setAttribute("eventOfOrganizerUpdate", eventOfOrganizerUpdate);
 //                doGet(request, response);
 //            }
-            
             response.sendRedirect("home?eventId=" + eventId + "&eventDetail=show");
         }
-        
-        
-           
-        
+
+        if (request.getParameter("editInfo") != null && request.getParameter("editInfo").equals("Save") && request.getParameter("userId") != null) {
+            String userId = request.getParameter("userId");
+            String fullname = request.getParameter("fullname");
+            String address = request.getParameter("address");
+            String phone = request.getParameter("phone");
+            String gender = request.getParameter("gender");
+
+            User user = new User();
+            user.setId(Integer.parseInt(userId));
+            user.setFullname(fullname);
+            user.setAddress(address);
+            user.setPhone(phone);
+            user.setGender(gender);
+
+            udao.update(user);
+
+            request.getSession().setAttribute("updateSuccess", "Update successfully");
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+
+        }
+
     }
 
     @Override

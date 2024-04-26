@@ -30,6 +30,11 @@ public class RegisterController extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String rePassword = request.getParameter("rePassword");
+        String fullname = request.getParameter("fullname");
+        String address = request.getParameter("address");
+        String gender = request.getParameter("gender");
+        String phone = request.getParameter("phone");
+        
 
         boolean flag = false;
 
@@ -74,6 +79,10 @@ public class RegisterController extends HttpServlet {
             User user = new User();
             user.setUsername(username);
             user.setPassword(hashPassword);
+            user.setFullname(fullname);
+            user.setAddress(address);
+            user.setPhone(phone);
+            user.setGender(gender);
 
             userDao.insert(user);
 

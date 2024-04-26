@@ -11,26 +11,49 @@
 
     </head>
     <body>
-        <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="container d-flex justify-content-center align-items-center" style="height: 100vh; width: 30%">
             <div>
                 <h1 class="text-center mb-4">Register</h1>
                 <div class="my-3 text-center">Already have an account? <a href="login">Login here</a></div>
-                <form action="register" method="post">           
+                <form action="register" method="post" class="row g-3">           
                     <input type="hidden" class="form-control" name="id">
-                    <div class="mb-3">
+                    
+                    <div class="col-md-12">
+                        <label class="form-label">Fullname</label>
+                        <input type="text" class="form-control" name="fullname" value="${fullname}">
+                    </div>
+                    <div class="col-md-12">
                         <label class="form-label">Username</label>
                         <input type="text" class="form-control" name="username" value="${username}">
-
-
                     </div>
-                    <div class="mb-3">
+                    <div class="col-md-12">
                         <label class="form-label">Password</label>
                         <input type="password" class="form-control" name="password" value="${password}">
                     </div>
-                    <div class="mb-3">
+                    <div class="col-md-12">
                         <label class="form-label">Confirm password</label>
                         <input type="password" class="form-control" name="rePassword" value="${rePassword}">
                     </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone" value="${phone}">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>                      
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address" value="${address}">
+                    </div>
+                    
+                    
                     <div class="mb-3 d-flex justify-content-end">
                         <input type="submit" class="btn btn-primary" id="liveToastBtn" value="Register" name="register">
                     </div>

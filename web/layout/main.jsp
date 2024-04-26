@@ -36,7 +36,7 @@
                                 <div class="me-auto d-flex justify-content-between align-items-start"> 
                                     ${event.startDate}                                
                                     <c:choose>
-                                        
+
                                         <c:when test="${LocalDate.now().isBefore(startDate)}">
                                             <span class="badge bg-secondary rounded-pill">WAITING</span>
                                         </c:when>
@@ -132,7 +132,7 @@
                                             </c:forEach>
                                     </ol>
                                 </div>
-                                    
+
                                 <div class="my-1" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse3" style="cursor: pointer">
                                     <i class="bi bi-chevron-right"></i>
                                     <span>Not responded:</span> <span class="mx-1">${notRespondedCount}</span>
@@ -152,22 +152,40 @@
                                 ${eventOfOrganizer.getDescription()} 
                             </span>
                         </li>
+                        
+                        <c:set var="startDate" value="${LocalDate.parse(eventOfOrganizer.getStartDate())}" />
+                            <c:set var="endDate" value="${LocalDate.parse(eventOfOrganizer.getEndDate())}" />
+
                         <li class="list-group-item mt-3">
-                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEditEvent">
-                                <i class="bi bi-pencil"></i>
-                                <span>Edit</span>
-                            </button>
-                            <button class="btn btn-outline-secondary mx-1" type="button" data-bs-toggle="modal" data-bs-target="#modalDeleteEvent">
-                                <i class="bi bi-calendar-x"></i>
-                                <span>Delete</span>
-                            </button>
+                            <c:choose>
+                                <c:when test="${LocalDate.now().isBefore(startDate) || LocalDate.now().isAfter(endDate)}">
+                                    
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEditEvent">
+                                        <i class="bi bi-pencil"></i>
+                                        <span>Edit</span>
+                                    </button>
+                                    <button class="btn btn-outline-secondary mx-1" type="button" data-bs-toggle="modal" data-bs-target="#modalDeleteEvent">
+                                        <i class="bi bi-calendar-x"></i>
+                                        <span>Delete</span>
+                                    </button>
 
-                            <jsp:include page="../editEvent.jsp"></jsp:include>        
-                            <jsp:include page="../deleteEvent.jsp"></jsp:include>
+                                    <jsp:include page="../editEvent.jsp"></jsp:include>        
+                                    <jsp:include page="../deleteEvent.jsp"></jsp:include>
+                                    
+                                    
+                                    
+                                </c:when>
+                                <c:otherwise>
 
-                            </li>
-                        </ul>
-                    </div>
+                                    <div>This event is ongoing</div>
+                                    
+
+                                </c:otherwise>
+                            </c:choose>
+                        </li>
+
+                    </ul>
+                </div>
             </c:when>
             <c:when test="${not empty eventOfAttendees}">
                 <div class="card-body">                   

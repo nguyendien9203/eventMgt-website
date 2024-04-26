@@ -39,8 +39,6 @@ GO
 ALTER TABLE [event_user] ADD FOREIGN KEY ([user_id]) REFERENCES [users] ([id])
 GO
 
-ALTER TABLE events
-DROP COLUMN [status];
 
 
 

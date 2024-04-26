@@ -72,10 +72,10 @@ public class EventController extends HttpServlet {
                 request.setAttribute("notRespondedCount", notRespondedCount);
                 request.setAttribute("usersAccept", usersAccept);
                 request.setAttribute("usersAcceptable", usersAcceptable);
-                request.setAttribute("usersReject", usersReject); 
-                request.setAttribute("usersNotResponded", usersNotResponded); 
-                request.setAttribute("organizer", organizer); 
-                request.setAttribute("attendee", attendee); 
+                request.setAttribute("usersReject", usersReject);
+                request.setAttribute("usersNotResponded", usersNotResponded);
+                request.setAttribute("organizer", organizer);
+                request.setAttribute("attendee", attendee);
             }
         }
 
@@ -103,9 +103,8 @@ public class EventController extends HttpServlet {
 //        response.getWriter().println(attendeesIds);
 //        response.getWriter().println(description);
 //        response.getWriter().println(eventId);
-        
         HttpSession session = request.getSession(false);
-        
+
         List<String> errs = new ArrayList<>();
 
         User organizer = null;
@@ -128,13 +127,18 @@ public class EventController extends HttpServlet {
             event.setTitle(null);
         }
 
-        
-
         if (startDateStr != null && endDateStr != null) {
             LocalDate startDate = LocalDate.parse(startDateStr);
             LocalDate endDate = LocalDate.parse(endDateStr);
+            
+            LocalDate currentDate = LocalDate.now();
             if (startDate.isAfter(endDate)) {
                 errs.add("Start date cannot start after end date.");
+                request.setAttribute("errs", errs);
+                doGet(request, response);
+                return;
+            } else if (startDate.isBefore(currentDate) || endDate.isBefore(currentDate)) {
+                errs.add("Start date and end date must be greater than or equal to the current date.");
                 request.setAttribute("errs", errs);
                 doGet(request, response);
                 return;
@@ -155,9 +159,8 @@ public class EventController extends HttpServlet {
         } else {
             event.setDescription(null);
         }
-        
-        //response.getWriter().println(event);
 
+        //response.getWriter().println(event);
         try {
 
             if (request.getParameter("addEvent") != null && request.getParameter("addEvent").equals("Save")) {

@@ -81,7 +81,7 @@ public class UserDAO extends DBContext<User> {
         }
         return null;
     }
-    
+
     public List<User> findStatusNotResponded(int eventId, String role) {
         List<User> users = new ArrayList<>();
         try {
@@ -142,38 +142,6 @@ public class UserDAO extends DBContext<User> {
         return null;
     }
 
-    @Override
-    public User findById(int id) {
-        try {
-            String sql = "SELECT [id]\n"
-                    + "      ,[username]\n"
-                    + "      ,[password]\n"
-                    + "  FROM [dbo].[users]\n"
-                    + "  WHERE [id] = ?";
-            stm = connection.prepareStatement(sql);
-            stm.setInt(1, id);
-            rs = stm.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                return user;
-            }
-        } catch (Exception e) {
-            System.out.println("findById(): " + e.getMessage());
-        } finally {
-            if (stm != null) {
-                try {
-                    stm.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        return null;
-    }
-
     public User findAttendeesByUserIdAndEventIdAndRole(int userId, int eventId, String role) {
         try {
             String sql = "SELECT * FROM event_user eu JOIN users u ON eu.user_id = u.id "
@@ -208,17 +176,29 @@ public class UserDAO extends DBContext<User> {
     @Override
     public void insert(User user) {
         try {
-            String sql = "INSERT INTO [dbo].[users]\n"
+            String sql = "INSERT INTO [users]\n"
                     + "           ([username]\n"
                     + "           ,[password]\n"
-                    + "           ,[created_at])\n"
+                    + "           ,[created_at]\n"
+                    + "           ,[fullname]\n"
+                    + "           ,[phone]\n"
+                    + "           ,[address]\n"
+                    + "           ,[gender])\n"
                     + "     VALUES\n"
                     + "           (?\n"
                     + "           ,?\n"
-                    + "           ,GETDATE())";
-            stm = connection.prepareStatement(sql, stm.RETURN_GENERATED_KEYS);
+                    + "           ,GETDATE()\n"
+                    + "           ,?\n"
+                    + "           ,?\n"
+                    + "           ,?\n"
+                    + "           ,?)";
+            stm = connection.prepareStatement(sql);
             stm.setString(1, user.getUsername());
             stm.setString(2, user.getPassword());
+            stm.setString(3, user.getFullname());
+            stm.setString(4, user.getPhone());
+            stm.setString(5, user.getAddress());
+            stm.setString(6, user.getGender());
             stm.executeUpdate();
 
         } catch (Exception e) {
@@ -235,8 +215,65 @@ public class UserDAO extends DBContext<User> {
     }
 
     @Override
-    public void update(User model) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public User findById(int id) {
+        try {
+            String sql = "SELECT * FROM [users] WHERE id = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, id);
+            rs = stm.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setFullname(rs.getString("fullname"));
+                user.setPhone(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setGender(rs.getString("gender"));
+
+                return user;
+            }
+        } catch (Exception e) {
+            System.out.println("findById(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void update(User user) {
+        try {
+            String sql = "UPDATE [users]\n"
+                    + "   SET [updated_at] = GETDATE()\n"
+                    + "      ,[fullname] = ?\n"
+                    + "      ,[phone] = ?\n"
+                    + "      ,[address] = ?\n"
+                    + "      ,[gender] = ?\n"
+                    + " WHERE id = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setString(1, user.getFullname());
+            stm.setString(2, user.getPhone());
+            stm.setString(3, user.getAddress());
+            stm.setString(4, user.getGender());
+            stm.setInt(5, user.getId());
+            stm.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("update(): " + e.getMessage());
+        } finally {
+            if(stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     @Override
@@ -285,16 +322,9 @@ public class UserDAO extends DBContext<User> {
 
     public static void main(String[] args) {
         UserDAO udao = new UserDAO();
-        User user = udao.findAttendeesByUserIdAndEventIdAndRole(2, 1, "ATTENDEES");
-        
+        User user = udao.findById(7);
+        System.out.println(user);
 
-        User u = udao.findOrganizerByRoleAndEventId(1, "ORGANIZER");
-        
-        List<User> not = udao.findStatusNotResponded(9, "ATTENDEES");
-        System.out.println(not);
-        
-        
-        
     }
 
 }
