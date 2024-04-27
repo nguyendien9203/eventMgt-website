@@ -158,7 +158,7 @@
 
                         <li class="list-group-item mt-3">
                             <c:choose>
-                                <c:when test="${LocalDate.now().isBefore(startDate) || LocalDate.now().isAfter(endDate)}">
+                                <c:when test="${LocalDate.now().isBefore(endDate)}">
                                     
                                     <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEditEvent">
                                         <i class="bi bi-pencil"></i>

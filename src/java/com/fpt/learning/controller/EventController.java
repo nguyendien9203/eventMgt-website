@@ -6,7 +6,6 @@ package com.fpt.learning.controller;
 
 import com.fpt.learning.constant.RoleUser;
 import com.fpt.learning.constant.StatusAttendees;
-import com.fpt.learning.constant.StatusEvent;
 import com.fpt.learning.dal.EventDAO;
 import com.fpt.learning.dal.UserDAO;
 import com.fpt.learning.model.Event;
@@ -137,8 +136,8 @@ public class EventController extends HttpServlet {
                 request.setAttribute("errs", errs);
                 doGet(request, response);
                 return;
-            } else if (startDate.isBefore(currentDate) || endDate.isBefore(currentDate)) {
-                errs.add("Start date and end date must be greater than or equal to the current date.");
+            } else if (endDate.isBefore(currentDate)) {
+                errs.add("End date must be greater than or equal to the current date.");
                 request.setAttribute("errs", errs);
                 doGet(request, response);
                 return;

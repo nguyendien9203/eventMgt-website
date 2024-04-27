@@ -115,6 +115,23 @@
             session.removeAttribute("updateSuccess");
             }
         %>
+        
+        <% String changePasswordSuccess = (String) request.getSession().getAttribute("changePasswordSuccess"); %>
+        <% if (changePasswordSuccess != null && request.getAttribute("errs") == null) { %>
+        <div class="toast-container top-0 end-0 p-3">
+            <div id="liveToast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <%= changePasswordSuccess %>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <%            
+            session.removeAttribute("changePasswordSuccess");
+            }
+        %>
 
         
 

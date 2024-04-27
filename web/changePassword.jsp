@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<div class="modal fade" id="modalAccount" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalChangePassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -24,39 +24,23 @@
                             <input type="hidden" class="form-control" name="userId" value="${account.getId()}">
 
                             <div class="col-md-12">
-                                <label class="form-label">Fullname</label>
-                                <input type="text" class="form-control" name="fullname" value="${account.getFullname()}">
+                                <label class="form-label">Old password</label>
+                                <input type="password" class="form-control" name="oldPassword" value="">
                             </div>
                             <div class="col-md-12 my-2">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-control" name="username" value="${account.getUsername()}" disabled>
+                                <label class="form-label">New password</label>
+                                <input type="password" class="form-control" name="newPassword" value="">
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <input type="text" class="form-control" name="phone" value="${account.getPhone()}">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Gender</label>
-                                <select name="gender" class="form-select">                               
-                                    <option value="Male" ${account.getGender() eq "Male" ? "selected" : ""}>Male</option>
-                                    <option value="Female" ${account.getGender() eq "Female" ? "selected" : ""}>Female</option>
-                                </select>                      
-                            </div>
-
-                            <div class="col-md-12 my-2">
-                                <label class="form-label">Address</label>
-                                <input type="text" class="form-control" name="address" value="${account.getAddress()}">
+                            <div class="col-md-12">
+                                <label class="form-label">Confirm new password</label>
+                                <input type="password" class="form-control" name="confirmNewPassword" value="">
                             </div>
                         </div>
-
                     </div>
-
-
                 </div>
                 <div class="modal-footer">
-                    <input class="btn btn-primary" type="submit" name="editInfo" value="Save">      
+                    <input class="btn btn-primary" type="submit" name="changePassword" value="Save">      
                     <input class="btn btn-outline-primary" type="button" value="Cancel" data-bs-dismiss="modal">                                    
                 </div>
             </form>

@@ -43,8 +43,9 @@
                     <div class="col-md-6">
                         <label class="form-label">Gender</label>
                         <select name="gender" class="form-select">
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="" selected>Select gender</option>
+                            <option value="Male" ${gender eq "Male" ? "selected" : ""}>Male</option>
+                            <option value="Female" ${gender eq "Female" ? "selected" : ""}>Female</option>
                         </select>                      
                     </div>
                     

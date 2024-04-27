@@ -34,9 +34,13 @@ public class RegisterController extends HttpServlet {
         String address = request.getParameter("address");
         String gender = request.getParameter("gender");
         String phone = request.getParameter("phone");
-        
 
         boolean flag = false;
+
+        if (fullname.isBlank()) {
+            errs.add("Please enter fullname");
+            flag = true;
+        }
 
         if (username.isBlank()) {
             errs.add("Please enter username");
@@ -67,6 +71,11 @@ public class RegisterController extends HttpServlet {
             errs.add("Password does not match");
             flag = true;
         }
+       
+        if (!phone.trim().matches("^0[0-9]{9}$")) {
+            errs.add("Phone number must start with 0 and contain exactly 10 digits");
+            flag = true;
+        }
 
         if (userDao.findByUsername(username) != null) {
             errs.add("Username is existed");
@@ -89,13 +98,17 @@ public class RegisterController extends HttpServlet {
             request.getSession().setAttribute("registerSuccess", "Register successfully");
             response.sendRedirect(request.getContextPath() + "/login");
             return;
-            
+
         }
 
         request.setAttribute("errs", errs);
         request.setAttribute("username", username);
         request.setAttribute("password", password);
         request.setAttribute("rePassword", rePassword);
+        request.setAttribute("fullname", fullname);
+        request.setAttribute("address", address);
+        request.setAttribute("phone", phone);
+        request.setAttribute("gender", gender);
         doGet(request, response);
     }
 

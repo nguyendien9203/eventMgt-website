@@ -173,6 +173,55 @@ public class UserDAO extends DBContext<User> {
         return null;
     }
 
+    public boolean checkOldPassword(int id, String oldPassword) {
+        try {
+            String sql = "SELECT password FROM [users] WHERE id = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, id);
+            rs = stm.executeQuery();
+            if (rs.next()) {             
+                String hashedPassword = rs.getString("password");
+                if (bcryptUtil.checkPassword(oldPassword, hashedPassword)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("checkOldPassword(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return false;
+    }
+
+    public void changePassword(User user) {
+        try {
+            String sql = "UPDATE [users]\n"
+                    + "   SET [updated_at] = GETDATE()\n"
+                    + "      ,[password] = ?\n"
+                    + " WHERE id = ?";
+            stm = connection.prepareStatement(sql);
+            stm.setString(1, user.getPassword());
+            stm.setInt(2, user.getId());
+            stm.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("changePassword(): " + e.getMessage());
+        } finally {
+            if (stm != null) {
+                try {
+                    stm.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
     @Override
     public void insert(User user) {
         try {
@@ -266,7 +315,7 @@ public class UserDAO extends DBContext<User> {
         } catch (Exception e) {
             System.out.println("update(): " + e.getMessage());
         } finally {
-            if(stm != null) {
+            if (stm != null) {
                 try {
                     stm.close();
                 } catch (SQLException ex) {
@@ -322,8 +371,12 @@ public class UserDAO extends DBContext<User> {
 
     public static void main(String[] args) {
         UserDAO udao = new UserDAO();
-        User user = udao.findById(7);
-        System.out.println(user);
+        if(udao.checkOldPassword(10, "abcd12345")) {
+            System.out.println("OK");
+        }else {
+            System.out.println("Not OK");
+        }
+        
 
     }
 

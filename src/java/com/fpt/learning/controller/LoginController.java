@@ -30,8 +30,11 @@ public class LoginController extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        
 
         boolean flag = false;
+        
+        
 
         if (username.isBlank()) {
             errs.add("Please enter username");
@@ -52,6 +55,8 @@ public class LoginController extends HttpServlet {
             errs.add("Password contains at least 8 characters including lowercase letters and numbers");
             flag = true;
         }
+        
+        
 
         if (!flag) {
             if (userDao.login(username, password)) {
@@ -71,6 +76,7 @@ public class LoginController extends HttpServlet {
         request.setAttribute("errs", errs);
         request.setAttribute("username", username);
         request.setAttribute("password", password);
+        
         doGet(request, response);
     }
 

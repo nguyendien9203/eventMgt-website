@@ -10,18 +10,21 @@ import com.fpt.learning.dal.EventDAO;
 import com.fpt.learning.dal.UserDAO;
 import com.fpt.learning.model.Event;
 import com.fpt.learning.model.User;
+import com.fpt.learning.utils.BcryptUtil;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeController extends HttpServlet {
 
     private UserDAO udao = new UserDAO();
     private EventDAO edao = new EventDAO();
+    private BcryptUtil bcryptUtil = BcryptUtil.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -110,24 +113,92 @@ public class HomeController extends HttpServlet {
         }
 
         if (request.getParameter("editInfo") != null && request.getParameter("editInfo").equals("Save") && request.getParameter("userId") != null) {
+            List<String> errs = new ArrayList<>();
+
             String userId = request.getParameter("userId");
             String fullname = request.getParameter("fullname");
             String address = request.getParameter("address");
             String phone = request.getParameter("phone");
             String gender = request.getParameter("gender");
 
-            User user = new User();
-            user.setId(Integer.parseInt(userId));
-            user.setFullname(fullname);
-            user.setAddress(address);
-            user.setPhone(phone);
-            user.setGender(gender);
+            boolean flag = false;
 
-            udao.update(user);
+            if (fullname.isBlank()) {
+                errs.add("Please enter fullname");
+                flag = true;
+            }
 
-            request.getSession().setAttribute("updateSuccess", "Update successfully");
-            response.sendRedirect(request.getContextPath() + "/home");
-            return;
+            if (!phone.trim().matches("^0[0-9]{9}$")) {
+                errs.add("Phone number must start with 0 and contain exactly 10 digits");
+                flag = true;
+            }
+
+            if (!flag) {
+                User user = new User();
+                user.setId(Integer.parseInt(userId));
+                user.setFullname(fullname);
+                user.setAddress(address);
+                user.setPhone(phone);
+                user.setGender(gender);
+
+                udao.update(user);
+
+                request.getSession().setAttribute("updateSuccess", "Update successfully");
+                response.sendRedirect(request.getContextPath() + "/home");
+                return;
+            }
+
+            request.setAttribute("errs", errs);
+            doGet(request, response);
+
+        }
+        
+        if (request.getParameter("changePassword") != null && request.getParameter("changePassword").equals("Save") && request.getParameter("userId") != null) {
+            List<String> errs = new ArrayList<>();
+
+            String userId = request.getParameter("userId");
+            String oldPassword = request.getParameter("oldPassword");
+            String newPassword = request.getParameter("newPassword");
+            String confirmNewPassword = request.getParameter("confirmNewPassword");
+
+            boolean flag = false;
+
+            if (oldPassword == null || oldPassword.isBlank()) {
+                errs.add("Please enter old password");
+                flag = true;
+            }
+            
+            if(!udao.checkOldPassword(Integer.parseInt(userId), oldPassword)) {
+                errs.add("The old password is incorrect");
+                flag = true;
+            }
+            
+            if (newPassword == null || newPassword.isBlank()) {
+                errs.add("Please enter new password");
+                flag = true;
+            }
+            
+            if (!newPassword.equals(confirmNewPassword)) {
+                errs.add("New password is not match");
+                flag = true;
+            }                                       
+
+            if (!flag) {
+                String hashNewPassword = bcryptUtil.hashPassword(newPassword);
+                
+                User user = new User();
+                user.setId(Integer.parseInt(userId));
+                user.setPassword(hashNewPassword);
+                
+                udao.changePassword(user);
+
+                request.getSession().setAttribute("changePasswordSuccess", "Change password successfully");
+                response.sendRedirect(request.getContextPath() + "/home");
+                return;
+            }
+
+            request.setAttribute("errs", errs);
+            doGet(request, response);
 
         }
 
